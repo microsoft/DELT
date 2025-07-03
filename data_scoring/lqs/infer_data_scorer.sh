@@ -10,6 +10,7 @@ export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
 
 python data_scorer/lqs/tools/convert_tokenization.py \
+    --lqs-process scorer_data_infer \
     --config-file $CONFIG_FILE \ 
 
 DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
@@ -17,11 +18,8 @@ DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
                   --master_port $MASTER_PORT"
 
 export NCCL_DEBUG=""
-export WANDB_DISABLED=True
-export TF_CPP_MIN_LOG_LEVEL=3
-export PYTHONPATH=${base-path}
 
-cmd="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/infer.py --config ${CONFIG_FILE} $@"
+cmd="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/infer.py  --lqs-process scorer_data_infer --config ${CONFIG_FILE} $@"
 
 echo ${cmd}
 echo "PYTHONPATH=${PYTHONPATH}"
@@ -30,4 +28,5 @@ ${cmd}
 
 
 python data_scorer/lqs/tools/cc_bin2jsonl.py \
+    --lqs-process scorer_data_infer \
     --config-file $CONFIG_FILE \ 

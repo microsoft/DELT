@@ -69,10 +69,15 @@ def set_random_seed(seed, mp=False):
         # if mp:
         #     mpu.model_parallel_cuda_manual_seed(seed)
 
-def add_args(args, method_params):
-    for key, value in method_params.items():
-        if not hasattr(args, key) or getattr(args, key) is None:
-            setattr(args, key, value)
+def add_args(args, method_params, fields=None):
+    if fields is None:
+        fields = method_params.keys()
+
+    for field in fields:
+        if field in method_params:
+            for key, value in method_params[field].items():
+                if not hasattr(args, key) or getattr(args, key) is None:
+                    setattr(args, key, value)
     return args
 
 def init_distributed(args):

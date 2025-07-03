@@ -2,8 +2,7 @@
 
 INPUT_DATA_PATH=${1-"./data/original_data.jsonl"}
 OUTPUT_DATA_PATH=${2-"./data/scored_data.jsonl"}
-METHOD=${3-"lqs"} 
-CONFIG_PATH=${4-"./data_scoring/config/lqs.yaml"}
+CONFIG_PATH=${3-"./data_scoring/config/lqs.yaml"}
 
 # Step 1: prepare full dataset.
 bash $BASE_PATH/data_scorer/lqs/scripts/tools/prepare_full_dataset.sh $DATA_PATH $CONFIG_PATH # tokenize cc use fairseq 125M
@@ -23,4 +22,4 @@ bash $BASE_PATH/data_scorer/lqs/scripts/proxy_data/proxy_data_annotation.sh $CON
 bash $BASE_PATH/data_scorer/lqs/scripts/train_data_scorer.sh $CONFIG_PATH # data scorer training
 
 # Step 5: full dataset scoring.
-bash $BASE_PATH/data_scorer/lqs/scripts/infer_data_scorer.sh $CONFIG_PATH # data scorer infer (data scoring) 
+bash $BASE_PATH/data_scorer/lqs/scripts/infer_data_scorer.sh $CONFIG_PATH $OUTPUT_DATA_PATH # data scorer infer (data scoring) 

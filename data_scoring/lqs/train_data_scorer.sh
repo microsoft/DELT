@@ -16,7 +16,7 @@ export WANDB_DISABLED=True
 export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
 
-CMD="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/train_scorer.py --config ${CONFIG_FILE} $@"
+CMD="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/train_scorer.py --lqs-process scorer_data_training --config ${CONFIG_FILE} $@"
 
 echo ${CMD}
 echo "PYTHONPATH=${PYTHONPATH}"

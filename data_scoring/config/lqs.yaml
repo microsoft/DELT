@@ -5,12 +5,22 @@ description: Config of LQS method in data scoring.
 full_data:
   hf-model-id: Data-Selection/BSL-160M
   output-model-path: mistral/160M
+
   field: text
   model-type: mistral
 
+  type: data_processing 
+  data-name: cc 
+  model-path: checkpoints/mistral/160M 
+  data-dir: $DATA_PATH 
+  save: processed_data/data_scorer/lqs
+  max-length: 1025
+  log-interval: 10000
+  data-process-workers: 32
+  model-type: mistral
+  chunk-num-per-shard: 1000000
+
 target_data:
-  hf-model-id: Data-Selection/BSL-160M
-  output-model-path: mistral/160M
   data-path: GAIR/lima
   field: conversation
   model-type: mistral
@@ -69,7 +79,24 @@ annotation_data:
 
   mode: "disabled"
 
-scorer_data:
+
+  type: data_processing
+  data-dir: $BASE_PATH/processed_data/proxy/cc-mistral-1025/163840
+  model-type: mistral
+  model-path: $BASE_PATH/checkpoints/mistral/160M
+  proxy-score-path: $BASE_PATH/results/proxy_data/cc-lima/160M/sgd-t100-bs8-lr0.008constant1e-07-G2-N16-NN2ct10
+  data-scorer-tokenizer-path: $BASE_PATH/checkpoints/fairseq/125M
+  data-scorer-model-type: fairseq
+  data-name: cc-sgd100-160M-lima-lqs
+  save: $BASE_PATH/processed_data/data_scorer_train/
+  max-length: 1024
+  log-interval: 10000
+  data-process-workers: 32
+  chunk-num-per-shard: 1000000
+  dev-num: 16384
+  proxy-num: 163840
+
+scorer_data_training:
   base-path: "/home/data_efficacy"
 
   type: "data-scorer"
@@ -111,6 +138,8 @@ scorer_data:
   deepspeed-config: "/home/data_efficacy/configs/deepspeed/ds_config.json"
   
   wandb-mode: "disabled"
+
+scorer_data_infer:
 
 
 
