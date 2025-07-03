@@ -1,6 +1,0 @@
-name: folding
-version: 1.0
-description: Config of folding method in data ordering.
-
-score_field: lqs_score
-folding_layer: 3
