@@ -1,9 +1,9 @@
 # Data Efficacy for Language Model Training
 
 <p align="center">
- <img src="https://img.shields.io/badge/Task_LM-Efficacy-orange" alt="Task" /> 
- <img src="https://img.shields.io/badge/Paper_Published-green" alt="Paper" /> 
- <img src="https://img.shields.io/badge/Code_License-MIT-blue" alt="Code" />
+ <img src="https://img.shields.io/badge/Task-LM_Efficacy-orange" alt="Task" /> 
+ <img src="https://img.shields.io/badge/Paper-Published-green" alt="Paper" /> 
+ <img src="https://img.shields.io/badge/License-MIT-blue" alt="License" />
 </p>
 
 <p align="center">
