@@ -1,33 +1,167 @@
-# Project
+# Data Efficacy for Language Model Training
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+<p align="center">
+ <img src="https://img.shields.io/badge/Task_LM-Efficacy-orange" alt="Task" /> 
+ <img src="https://img.shields.io/badge/Paper_Published-green" alt="Paper" /> 
+ <img src="https://img.shields.io/badge/Code_License-MIT-blue" alt="Code" />
+</p>
 
-As the maintainer of this project, please make a few updates:
+<p align="center">
+  <a href="https://arxiv.org/abs/2506.21545"><b>[📜 Paper]</b></a> •
+  <a href="https://github.com/microsoft/DELT"><b>[🐱 GitHub Code]</b></a>
+</p>
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+<figure>
+  <img src="./figures/fig1_teaser.jpg" alt="Figure 1" style="width: 95%;">
+  <figcaption style="color: gray;">
+    <div><small><em>Figure 1. Average result across 8 benchmarks for different methods. High performance at the same selection ratio indicates high efficacy, while achieving similar performance with a smaller selection ratio demonstrates high efficiency. Our method excels in both efficacy and efficiency.</em></small></div>
+  </figcaption>
+</figure>
 
-## Contributing
+## 🌟 Introduction
+Data is fundamental to the training of language models (LM). Recent research has been dedicated to data efficiency, which aims to maximize performance by selecting a minimal or optimal subset of training data. Techniques such as data filtering, sampling, and selection play a crucial role in this area. To complement it, we define Data Efficacy, which focuses on maximizing performance by optimizing the organization of training data and remains relatively underexplored. This work introduces a general paradigm, DELT, for considering data efficacy in LM training, which highlights the significance of training data organization. DELT comprises three components: Data Scoring, Data Selection, and Data Ordering.
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+<figure>
+  <img src="./figures/data_efficacy_paradigm.png" alt="Figure 2" style="width: 95%;">
+  <figcaption style="color: gray;">
+    <div align="center"><small><em>Figure 2. DELT paradigm.</em></small></div>
+  </figcaption>
+</figure>
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+For data scoring, we design **Learnability-Quality Scoring (LQS)** method, which considers both the learnability and quality of each data sample from the gradient consistency perspective.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+<figure>
+  <img src="./figures/fig2_score.jpg" alt="Figure 3" style="width: 95%;">
+  <figcaption style="color: gray;">
+    <div align="center"><small><em>Figure 3. Learnability-Quality Scoring (LQS).</em></small></div>
+  </figcaption>
+</figure>
 
-## Trademarks
+For data ordering, we devise **Folding Ordering (FO)** method, which addresses issues such as model forgetting and data distribution bias.
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+<figure>
+  <img src="./figures/fig3_order.jpg" alt="Figure 4" style="width: 95%;">
+  <figcaption style="color: gray; text-align: center;">
+    <div align="center"><small><em>Figure 4. Folding Ordering (FO).</em></small></div>
+  </figcaption>
+</figure>
+
+
+## 📢 News and Updates
+
+Done
+- [x] 2025/06/28: 💥[Arxiv paper](https://arxiv.org/abs/2506.21545) released.
+- [x] 2025/06/28: 💥We have released the DELT code for pre-training on general data.
+
+TBD
+- [ ] Release the trained data scorer checkpoint .
+- [ ] Release the DELT code for post-training on specific domain data.
+
+
+## ⚙️ Environment Installation
+
+```bash
+conda create -n data_efficacy python=3.10
+conda activate data_efficacy
+bash install.sh
+```
+
+## 💾 Preparation.
+
+<details open>
+<summary>Dataset Preparation</summary>
+
+```bash
+python utils.py --content=dataset --id=$HF_DATASET_ID --save_dir=$OUTPUT_DATA_PATH
+
+# e.g. python utils.py --content=dataset --id=togethercomputer/RedPajama-Data-1T --save_dir=data/original_data.jsonl --split_name=train --sample_size=10000
+# You could also replace it with your own dataset under jsonl format.
+```
+</details>
+
+<details open>
+<summary>Model Preparation</summary>
+
+```bash
+python utils.py --content=model --id=$HF_MODEL_ID --save_dir=$OUTPUT_MODEL_PATH
+
+# e.g. python utils.py --content=model --id=Data-Selection/BSL-160M --save_dir=model/input_model
+# You could also replace it with your own model under hf format.
+```
+</details>
+
+## ⏩ Quick Start.
+
+<details open>
+<summary>Data Scoring</summary>
+
+Existing scoring method: KenLM (`kenlm`), PDS (`pds`), and **Learnability-Quality Score** (`lqs`).
+For more details about LQS, please refer to [this guide](./data_scoring/lqs/README_LQS.md).
+
+```bash
+bash data_scoring/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
+
+# e.g. bash data_scoring/entry.sh data/original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
+```
+</details>
+
+<details open>
+<summary>Data Selection</summary>
+
+Existing selection method: **Top-R** (`top-r`), Top-K (`top-k`), and Threshold (`threshold`).
+
+```bash
+bash data_selection/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
+
+# e.g. bash data_selection/entry.sh data/scored_data.jsonl data/selected_data.jsonl top-r data_selection/config/top-r.yaml
+```
+</details>
+
+<details open>
+<summary>Data Ordering</summary>
+
+Existing ordering method: Shuffle (`shuffle`), Sorting (`sorting`), and **Folding Ordering (FO)** (`folding`).
+
+```bash
+bash data_ordering/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
+
+# e.g. bash data_ordering/entry.sh data/selected_data.jsonl data/ordered_data.jsonl folding data_ordering/config/folding.yaml
+```
+</details>
+
+
+<details open>
+<summary>Model Training</summary>
+
+```bash
+bash model_train/entry.sh $INPUT_DATA_PATH $INPUT_MODEL_PATH $OUTPUT_MODEL_PATH $METHOD $CONFIG_PATH
+
+# e.g. bash model_train/entry.sh data/ordered_data.jsonl model/input_model model/output_model pretrain model_train/config/pre_train.yaml
+```
+</details>
+
+
+<details open>
+<summary>Model Evaluation</summary>
+
+```bash
+bash model_eval/entry.sh $INPUT_MODEL_PATH $OUTPUT_RESULT_PATH $METHOD $CONFIG_PATH
+
+# e.g. bash model_eval/entry.sh model/output_model model/result.yaml lm_evaluation_harness model_eval/config/general.yaml
+```
+</details>
+
+
+## 🔗 Citation
+```
+@article{dai2025data,
+  title={Data Efficacy for Language Model Training},
+  author={Yalun Dai and Yangyu Huang and Xin Zhang and Wenshan Wu and Chong Li and Wenhui Lu and Shijie Cao and Li Dong and Scarlett Li},
+  journal={arXiv preprint arXiv:2506.21545},
+  year={2025}
+}
+```
+
+## 👀 License
+This repository is licensed under the [MIT](https://github.com/microsoft/DELT/blob/main/LICENSE) License.
+

@@ -1,0 +1,16 @@
+name: pre_train
+version: 1.0
+description: Config of model pre-training.
+
+seed: 42
+data_field: text
+batch_size: 1
+gradient_accumulation_steps: 1
+max_length: 2048
+lr: 2e-5
+num_epochs: 1
+shuffle_data: false
+
+# deepspeed
+deepspeed: true
+deepspeed_config: configs/deepspeed.json

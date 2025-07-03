@@ -1,0 +1,5 @@
+name: shuffle
+version: 1.0
+description: Config of shuffle method in data ordering.
+
+score_field: lqs_score
