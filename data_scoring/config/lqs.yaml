@@ -1,3 +1,123 @@
 name: LQS
 version: 1.0
 description: Config of LQS method in data scoring.
+
+full_data:
+  hf-model-id: Data-Selection/BSL-160M
+  output-model-path: mistral/160M
+  field: text
+  model-type: mistral
+
+target_data:
+  hf-model-id: Data-Selection/BSL-160M
+  output-model-path: mistral/160M
+  data-path: GAIR/lima
+  field: conversation
+  model-type: mistral
+
+proxy_data:
+  data-path: processed_data/pretrain/cc/mistral-1025
+  proxy-num: 163840
+  save-path: processed_data/proxy
+
+annotation_data:
+  model-path: Data-Selection/BSL-160M
+  model-save-path: mistral/160M
+
+  base_path: "/home/data_efficacy"
+
+  type: "data_annotation"
+  model_type: "mistral"
+  model_path: "/home/data_efficacy/results/pretrain/160M/"
+  ckpt_name: "160M"
+  attn_impl: "eager"
+  fp32: true
+
+  max_state: 10
+  proxy_num: 163840
+  data_name: "cc-lima"
+  data_dir: "/home/data_efficacy/processed_data/pretrain/cc/mistral-1025"
+  dev_data_dir: "/home/data_efficacy/processed_data/lima/mistral-1025/dev"
+  proxy_data_dir: "/home/data_efficacy/processed_data/proxy/cc-mistral-1025/163840"
+  bin_data: true
+  no_shuffle: true
+  dataset_type: "lm"
+
+  total_iters: 100
+  lr: 0.008
+  batch_size: 8
+  grad_batch_size: 2
+  proxy_batch_size: 8
+  eval_batch_size: 4
+  gradient_accumulation_steps: 2
+  clip_grad: -1
+  max_length: 1024
+  num_workers: 2
+  weight_decay: 0.0
+  optimizer_name: "sgd"
+  scheduler_name: "constant"
+  warmup_iters: 0
+
+  save_path: "/home/data_efficacy/results/proxy_data/"
+  log_interval: 1
+  eval_interval: 10
+  wandb_group: "data_annotation"
+  compute_ct_interval: 10
+
+  seed: 10
+  seed_data: 20
+
+  mode: "disabled"
+
+scorer_data:
+  base-path: "/home/data_efficacy"
+
+  type: "data-scorer"
+  ckpt-name: "fairseq/125M"
+  ckpt-path: "/home/data_efficacy/checkpoints/fairseq/125M/"
+  model-type: "fairseq"
+  data-scorer-encoding: "mean"
+  data-scorer-bias: true
+  data-scorer-head-type: "linear"
+  # gradient-checkpointing: true
+
+  data-dir: "/home/data_efficacy/processed_data/data_scorer_train/cc-sgd100-160M-lima-lqs-163840"
+  data-name: "cc-sgd100-160M-lima-lqs-163840"
+  num-workers: 0
+  train-num: 163840
+  dev-num: 16384
+
+  lr: 0.0001
+  batch-size: 16
+  eval-batch-size: 64
+  gradient-accumulation-steps: 2
+  warmup-iters: 10
+  scheduler-name: "cosine"
+  weight-decay: 1e-2
+  clip-grad: 1.0
+  epochs: 5
+  max-length: 1024
+
+  do-train: true
+  do-valid: true
+  save-interval: -1
+  eval-interval: -1
+  log-interval: 1
+  mid-log-num: -1
+  save-path: "/home/data_efficacy/results/data_scorer"
+  seed: 10
+
+  deepspeed: true
+  deepspeed-config: "/home/data_efficacy/configs/deepspeed/ds_config.json"
+  
+  wandb-mode: "disabled"
+
+
+
+
+
+
+
+
+
+
