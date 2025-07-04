@@ -28,6 +28,8 @@ Data is fundamental to the training of language models (LM). Recent research has
   </figcaption>
 </figure>
 
+<br>
+
 For data scoring, we design **Learnability-Quality Scoring (LQS)** method, which considers both the learnability and quality of each data sample from the gradient consistency perspective.
 
 <figure>
@@ -36,6 +38,8 @@ For data scoring, we design **Learnability-Quality Scoring (LQS)** method, which
     <div align="center"><small><em>Figure 3. Learnability-Quality Scoring (LQS).</em></small></div>
   </figcaption>
 </figure>
+
+<br>
 
 For data ordering, we devise **Folding Ordering (FO)** method, which addresses issues such as model forgetting and data distribution bias.
 
