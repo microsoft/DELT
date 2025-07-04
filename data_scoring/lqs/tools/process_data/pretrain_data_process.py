@@ -1,5 +1,8 @@
 """Processing data"""
 import os
+executable_path = os.getcwd()
+os.path.append(executable_path)
+
 import json
 import time
 import torch
@@ -7,6 +10,7 @@ import random
 import argparse
 import numpy as np
 import multiprocessing
+
 
 from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
 

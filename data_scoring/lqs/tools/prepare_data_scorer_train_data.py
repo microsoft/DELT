@@ -1,4 +1,7 @@
 import os
+executable_path = os.getcwd()
+os.path.append(executable_path)
+
 import h5py
 import torch
 import argparse
@@ -39,6 +42,7 @@ def normalize(scores):
 
 def main(args):
 
+    args.base_path = executable_path
     output_dir = os.path.join(args.save, f"{args.data_name}-{args.proxy_num}")
     os.makedirs(output_dir, exist_ok=True)
     

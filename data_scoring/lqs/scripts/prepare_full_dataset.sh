@@ -1,10 +1,13 @@
-BASE_PATH=${1}
-
 DATA_PATH=${1-"${BASE_PATH}/pretrain_data/redpajama_sample_1B/cc_en_head/"}
 CONFIG_PATH=${2-"./data_scoring/config/lqs.yaml"}
 
+export BASE_PATH=$PWD
 export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
+
+# import os
+# os.path.append(os.getcwd())
+
 
 # download model
 python data_scoring/lqs/tools/hf_download.py \
