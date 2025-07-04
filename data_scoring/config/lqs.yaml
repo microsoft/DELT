@@ -79,7 +79,6 @@ annotation_data:
 
   mode: "disabled"
 
-
   type: data_processing
   data-dir: $BASE_PATH/processed_data/proxy/cc-mistral-1025/163840
   model-type: mistral
@@ -140,13 +139,3 @@ scorer_data_training:
   wandb-mode: "disabled"
 
 scorer_data_infer:
-
-
-
-
-
-
-
-
-
-

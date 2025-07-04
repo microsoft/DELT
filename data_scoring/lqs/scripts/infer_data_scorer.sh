@@ -1,17 +1,18 @@
+#!/bin/bash
+
 CONFIG_FILE=${1-"./data_scoring/config/lqs.yaml"}
 
 MASTER_PORT=${2-2030}
 GPUS_PER_NODE=${3-1}
 NNODES=1
+DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
+                  --num_nodes $NNODES \
+                  --master_port $MASTER_PORT"
 
 export BASE_PATH=$PWD
 export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
 export NCCL_DEBUG=""
-
-DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
-                  --num_nodes $NNODES \
-                  --master_port $MASTER_PORT"
 
 # convert tokenize
 python data_scorer/lqs/tools/convert_tokenization.py \
