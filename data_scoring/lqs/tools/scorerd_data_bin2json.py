@@ -1,8 +1,8 @@
 import json
 import numpy as np
 import argparse
-from data_utils import DistributedMMapIndexedDataset 
-from utils import get_tokenizer 
+from model_train.data_utils import DistributedMMapIndexedDataset 
+from utils import  add_args, load_yaml, get_tokenizer
 import torch
 
 
@@ -53,9 +53,7 @@ def decode_bin_to_jsonl_with_scores(bin_dir, score_file, output_file, tokenizer,
     print(f"Decoding complete. All data saved to {output_file}")
 
 
-def main():
-    args = parse_args()
-
+def main(args):
     tokenizer = get_tokenizer(args, model_path=args.tokenizer_path, model_type=args.model_type)
 
     decode_bin_to_jsonl_with_scores(
@@ -66,6 +64,13 @@ def main():
         score_name=args.score_name
     )
 
-
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Sample proxy data for annotation.")
+    parser.add_argument("--base-path", type=str, required=True, help="Base path.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+    
+    main(args)

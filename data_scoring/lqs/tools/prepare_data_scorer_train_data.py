@@ -6,9 +6,9 @@ import numpy as np
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
-from data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder, best_fitting_dtype
-from arguments import add_data_args, add_runtime_args, add_pmp_solver_args, add_model_args, add_hp_args
-from utils import BOS_MODELS, get_tokenizer
+from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
+from model_train.data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder, best_fitting_dtype
+from data_scoring.lqs.argments_lqs import add_data_args, add_runtime_args, add_hp_args, add_model_args
 
 
 def add_additional_args(parser):
@@ -37,8 +37,7 @@ def normalize(scores):
     return scores
 
 
-def main():
-    args = get_args()
+def main(args):
 
     output_dir = os.path.join(args.save, f"{args.data_name}-{args.proxy_num}")
     os.makedirs(output_dir, exist_ok=True)
@@ -120,5 +119,14 @@ def main():
             f.create_dataset("scores", data=new_y)
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Prepare training data for data scorer.")
+    parser.add_argument("--base-path", type=str, required=True, help="Base path.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+
+    # args = get_args()
+    main(args)

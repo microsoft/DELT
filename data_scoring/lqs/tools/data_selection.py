@@ -59,7 +59,6 @@ def main():
                 break
             idx = sorted_selected_indices.pop()
 
-    # 保存选择后的数据和分数
     torch.save(selected_data, os.path.join(output_dir, "selected_data.pt"))
     torch.save(selected_scores, os.path.join(output_dir, "selected_scores.pt"))
     print("Data selection completed. Results saved to:", output_dir)
