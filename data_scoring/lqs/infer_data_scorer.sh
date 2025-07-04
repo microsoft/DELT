@@ -19,7 +19,7 @@ DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
 
 export NCCL_DEBUG=""
 
-cmd="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/infer.py  --lqs-process scorer_data_infer --config ${CONFIG_FILE} $@"
+cmd="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/infer_data_scorer.py  --lqs-process scorer_data_infer --config ${CONFIG_FILE} $@"
 
 echo ${cmd}
 echo "PYTHONPATH=${PYTHONPATH}"

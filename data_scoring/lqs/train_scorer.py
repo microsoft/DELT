@@ -4,21 +4,17 @@ import os
 import random
 import numpy as np
 import torch
-# init_env()
+import argparse
+
 import torch.distributed as dist
 import json
-from data_scorer.lqs.argments_lqs import get_args
 
-from utils import print_args, initialize
-from utils import save_rank
+from utils import print_args, save_rank, add_args, load_yaml
 
 from data_scorer.lqs.annotation import GammaTrainer
 from data_scorer.lqs.trainer import DataScorerTrainer
 
-
 torch.set_num_threads(16)
-
-
 
 def init_env(args):
     print('Random Seed: ', args.seed)
@@ -85,4 +81,12 @@ def main():
 
     
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Sample proxy data for annotation.")
+    parser.add_argument("--base-path", type=str, required=True, help="Base path.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+    
+    main(args)

@@ -8,7 +8,8 @@ import argparse
 import numpy as np
 import multiprocessing
 
-from utils import BOS_MODELS, get_tokenizer
+from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
+
 from model_train.data_utils import ChunkedDatasetBuilder, best_fitting_dtype
 from data_scoring.lqs.argments_lqs import add_data_args, add_runtime_args, add_hp_args, add_model_args
 
@@ -71,8 +72,7 @@ def get_ent_sent_infos(args, tokenizer):
     return ent_sent_mask, rt_token_mask
 
 
-def main():
-    args = get_args()
+def main(args):
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -87,7 +87,7 @@ def main():
     output_path = os.path.join(args.save, args.data_name, f"{args.model_type}-{args.max_length}")
     os.makedirs(output_path, exist_ok=True)
     print_and_save(f"Tokenizer vocab size: {tokenizer.vocab_size}. Using dtype: {dtype}", output_path)
-    print_and_save(f"Input path: {args.data_dir} | Output path: {output_path}", output_path)
+    print_and_save(f"Input path: {args.data_path} | Output path: {output_path}", output_path)
         
     with open(os.path.join(output_path, "args.json"), "w") as f:
         json.dump(vars(args), f)
@@ -118,7 +118,7 @@ def main():
     
     global_start = time.time()
     files_names =[]
-    for _, _, files in os.walk(args.data_dir):
+    for _, _, files in os.walk(args.data_path):
         for file_name in files:
             files_names.append(file_name)
             
@@ -131,7 +131,7 @@ def main():
     
     for fid, file_name in enumerate(files_names):
         print_and_save(f"Processing {file_name}. {fid}/{len(files_names)}", output_path)
-        input_file = os.path.join(args.data_dir, file_name)
+        input_file = os.path.join(args.data_path, file_name)
         fin = open(input_file)
 
         # use the tokenizer to encode the sentences
@@ -223,4 +223,13 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description="Process and tokenize the training data.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--data-path", type=str, required=True, help="Input dataset path.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+
+    # args = get_args()
+    main(args)

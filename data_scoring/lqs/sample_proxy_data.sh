@@ -1,5 +1,6 @@
-BASE_PATH=${1}
+CONFIG_PATH=${1-"./data_scoring/config/lqs.yaml"}
 
+export BASE_PATH=$PWD
 export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
 

@@ -5,11 +5,13 @@ import torch
 import json
 import sys
 import numpy as np
-import datasets
-from data_utils import ChunkedDatasetBuilder, best_fitting_dtype
-from arguments import get_args
-from utils import BOS_MODELS, get_tokenizer
 import shutil
+import argparse
+import datasets
+
+from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
+
+from model_train.data_utils import ChunkedDatasetBuilder, best_fitting_dtype
 
 
 class Encoder(object): 
@@ -105,4 +107,13 @@ def main():
     
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description="Process and tokenize the training data.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--data-path", type=str, required=True, help="Input dataset path.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+
+    # args = get_args()
+    main(args)

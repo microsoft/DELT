@@ -16,4 +16,5 @@ python data_scoring/lqs/tools/hf_download.py \
 python data_scoring/lqs/tools/process_data/pretrain_data_process.py \
     --base-path $BASE_PATH \
     --lqs-process full_data \
+    --data-path $DATA_PATH \
     --config-path $CONFIG_PATH \
