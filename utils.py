@@ -2,6 +2,7 @@ import os
 import yaml
 import json
 import random
+import argparse
 import numpy as np
 from datetime import timedelta
 
@@ -19,8 +20,8 @@ except:
     mpu = None
 
 WANDB_PROJ_NAME = "data_selection_bp"
-PAD_EOS_MODELS = ["gpt2", "opt", "llama", "mistral", "stability"]
-BOS_MODELS = ["fairseq", "mistral", "llama", "stability"]
+PAD_EOS_MODELS = ["gpt2", "opt", "llama", "mistral"]
+BOS_MODELS = ["fairseq", "mistral", "llama"]
 
 
 # Logging
@@ -70,6 +71,8 @@ def set_random_seed(seed, mp=False):
         #     mpu.model_parallel_cuda_manual_seed(seed)
 
 def add_args(args, method_params, fields=None):
+    if isinstance(fields, str):
+        fields = [fields]
     if fields is None:
         fields = method_params.keys()
 
@@ -79,6 +82,7 @@ def add_args(args, method_params, fields=None):
                 if not hasattr(args, key) or getattr(args, key) is None:
                     setattr(args, key, value)
     return args
+
 
 def init_distributed(args):
     args.rank = int(os.getenv("RANK", "0"))
@@ -282,11 +286,11 @@ def download_model(model_id, save_dir):
     model.save_pretrained(save_dir, safe_serialization=False)
     print(f"Model '{model_id}' has been saved to '{save_dir}'.")
 
-def download_data(dataset_id, save_dir, split_name=None, sample_size=-1):
-    dataset = load_dataset(dataset_id, split=(split_name if split_name != "" else None))
+def download_data(dataset_id, name, save_dir, split_name=None, sample_size=-1):
+    dataset = load_dataset(dataset_id, name=name, split=(split_name if split_name != "" else None), trust_remote_code=True)
     if sample_size > 0 and sample_size < len(dataset):
         dataset = dataset.select(range(sample_size))
-    dataset.save_to_disk(save_dir)
+    dataset.to_json(save_dir)
     print(f"Dataset '{dataset_id}' has been saved to '{save_dir}'.")
 
 
@@ -294,9 +298,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download HF dataset or model.")
     parser.add_argument("--content", type=str, required=True, choices=["dataset", "model"], default="dataset", help="The content to be downloaded.")
     parser.add_argument("--id", type=str, required=True, help="Input dataset id or model id.")
-    parser.add_argument("--save_dir", type=str, required=True, help="Output path of saved dataset or model.")
-    parser.add_argument("--split_name", type=str, required=False, default=None, help="Split name of dataset.")
-    parser.add_argument("--sample_size", type=int, required=False, default=-1, help="Sample size of dataset.")
+    parser.add_argument("--data-name", type=str, required=False, default=None, help="Split name of dataset.")
+    parser.add_argument("--save-dir", type=str, required=True, help="Output path of saved dataset or model.")
+    parser.add_argument("--split-name", type=str, required=False, default=None, help="Split name of dataset.")
+    parser.add_argument("--sample-size", type=int, required=False, default=-1, help="Sample size of dataset.")
 
     args = parser.parse_args()
 
@@ -304,4 +309,4 @@ if __name__ == "__main__":
         download_model(args.id, args.save_dir)
 
     if args.content == "dataset":
-        download_data(args.id, args.save_dir, args.split_name, args.sample_size)
+        download_data(args.id, args.data_name, args.save_dir, args.split_name, args.sample_size)

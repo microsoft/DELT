@@ -3,8 +3,8 @@ version: 1.0
 description: Config of LQS method in data scoring.
 
 full_data:
-  hf-model-id: Data-Selection/BSL-160M
-  output-model-path: mistral/160M
+  hf_model_id: Data-Selection/BSL-160M
+  output_model_path: mistral/160M
 
   field: text
   model-type: mistral

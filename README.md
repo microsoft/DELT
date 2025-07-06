@@ -76,10 +76,12 @@ bash install.sh
 <summary>Dataset Preparation</summary>
 
 ```bash
-python utils.py --content=dataset --id=$HF_DATASET_ID --save_dir=$OUTPUT_DATA_PATH
+python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PATH
 
-# e.g. python utils.py --content=dataset --id=togethercomputer/RedPajama-Data-1T --save_dir=data/original_data.jsonl --split_name=train --sample_size=10000
-# You could also replace it with your own dataset under jsonl format.
+# e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_original_data.jsonl --split-name train --sample-size 100000
+# You could also replace it with your own dataset under jsonl format. 
+
+# python utils.py --content dataset --data-name plain_text --id togethercomputer/RedPajama-Data-1T-Sample --save-dir data/cc_original_data.jsonl --split-name train --sample-size 100000
 ```
 </details>
 
@@ -87,7 +89,7 @@ python utils.py --content=dataset --id=$HF_DATASET_ID --save_dir=$OUTPUT_DATA_PA
 <summary>Model Preparation</summary>
 
 ```bash
-python utils.py --content=model --id=$HF_MODEL_ID --save_dir=$OUTPUT_MODEL_PATH
+python utils.py --content=model --id $HF_MODEL_ID --save_dir $OUTPUT_MODEL_PATH
 
 # e.g. python utils.py --content=model --id=Data-Selection/BSL-160M --save_dir=model/input_model
 # You could also replace it with your own model under hf format.
@@ -106,6 +108,10 @@ For more details about LQS, please refer to [this guide](./data_scoring/lqs/READ
 bash data_scoring/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 
 # e.g. bash data_scoring/entry.sh data/original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
+
+#####
+# e.g. bash data_scoring/entry.sh data/cc_original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
+# e.g. bash data_scoring/lqs/entry_test.sh data/cc_original_data.jsonl lqs data_scoring/config/lqs.yaml
 ```
 </details>
 

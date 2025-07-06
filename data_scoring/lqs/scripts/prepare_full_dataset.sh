@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DATA_PATH=${1-"${BASE_PATH}/pretrain_data/redpajama_sample_1B/cc_en_head/"}
+DATA_PATH=${1-"./redpajama_sample_1B/cc_en_head/"}
 CONFIG_PATH=${2-"./data_scoring/config/lqs.yaml"}
 
 export BASE_PATH=$PWD
