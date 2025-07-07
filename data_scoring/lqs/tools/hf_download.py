@@ -21,4 +21,4 @@ if __name__ == "__main__":
         download_model(args.hf_model_id, args.output_model_path)
 
     if args.content == "dataset":
-        download_data(args.id, args.save_dir, args.split_name, args.sample_size)
+        download_data(args.hf_data_id, args.hf_data_name, args.output_data_path, args.split_name, args.sample_size)

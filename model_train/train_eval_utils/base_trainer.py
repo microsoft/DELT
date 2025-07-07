@@ -1,4 +1,9 @@
 import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import uuid
 import json
 import math
@@ -15,7 +20,7 @@ import torch.nn as nn
 import torch.distributed as dist
 from torch.utils.data import DataLoader, DistributedSampler
 from torch.optim import AdamW, SGD, Adam
-from data_utils.prompt_datasets import PromptDataset
+from model_train.data_utils import PromptDataset
 
 from transformers import (
     GenerationConfig,
@@ -42,7 +47,7 @@ class BaseTrainer():
         self.do_train = do_train
         self.tokenizer = get_tokenizer(args)
         self.grad_norm = 0
-        self.exp_name = args.save.strip("/").replace(args.base_path.strip("/"), "").replace("_", "").replace("/", "_").strip("_")
+        self.exp_name = args.save.strip("/").replace(base_path.strip("/"), "").replace("_", "").replace("/", "_").strip("_")
         self.wandb_name = self.args.wandb_name if self.args.wandb_name is not None else self.exp_name
         self.group_name = self.args.wandb_group or "pad"
         self.global_steps = None

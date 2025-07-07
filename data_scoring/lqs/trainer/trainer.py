@@ -1,5 +1,9 @@
 import os
 import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import json
 import torch
 import random
@@ -14,13 +18,14 @@ from scipy.stats import spearmanr
 from sklearn.metrics import f1_score, accuracy_score
 
 from utils import print_rank, all_gather
-from data_utils import DataScorerDataset
-from train_eval_utils.base_trainer import BaseTrainer
+from model_train.data_utils import DataScorerDataset
+from model_train.train_eval_utils.base_trainer import BaseTrainer
 
 from .modeling import DataScorerModel
 
 
 class DataScorerTrainer(BaseTrainer):
+    device = torch.cuda.current_device()
     def __init__(self, args, ds_config, device, do_train=True):
         super().__init__(args, ds_config, device, do_train)
         self.min_offset = 0
@@ -42,7 +47,7 @@ class DataScorerTrainer(BaseTrainer):
             bias = config.get("bias", False) or args.data_scorer_bias
             encoding = config.get("encoding", None) or args.data_scorer_encoding
             model = DataScorerModel(
-                args, "cpu", os.path.join(args.base_path, config["base_model_path"].strip("/")), bias=bias, encoding=encoding)
+                args, "cpu", os.path.join(base_path, config["base_model_path"].strip("/")), bias=bias, encoding=encoding)
             model.load_state_dict(torch.load(os.path.join(args.model_path, "data_scorer_model.pt"), map_location="cpu"))
             model = model.to(self.device)
             if args.do_infer and args.torch_compile is not None:

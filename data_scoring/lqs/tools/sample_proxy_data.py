@@ -1,28 +1,27 @@
 import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import argparse
 import numpy as np
 from tqdm import tqdm
 
-from model_train.data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder, best_fitting_dtype
+from model_train.data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder
 from utils import add_args, load_yaml
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser = add_pmp_solver_args(add_data_args(add_runtime_args(parser)))
-    args = parser.parse_args()
-    return args
 
-
-def main():
+def main(args):
     
     np.random.seed(args.seed)
     output_dir = os.path.join(args.save, f"{args.data_name}", f"{args.proxy_num}")
     os.makedirs(output_dir, exist_ok=True)
         
-    data = DistributedMMapIndexedDataset(args.data_dir, "data", min_state=args.min_state, max_state=args.max_state)
+    data = DistributedMMapIndexedDataset(args.data_path, "data", min_state=args.min_state, max_state=args.max_state)
     dtype = data[0].dtype.type
-    builder = ChunkedDatasetBuilder(args.base_path, output_dir, dtype)
+    builder = ChunkedDatasetBuilder(base_path, output_dir, dtype)
     
     data_num = len(data)
     
@@ -45,8 +44,7 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sample proxy data for annotation.")
-    parser.add_argument("--base-path", type=str, required=True, help="Base path.")
-    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data"], default="full_data", help="The content to be downloaded.")
     parser.add_argument("--config-path", type=str, required=True, help="Config path.")
 
     args = parser.parse_args()

@@ -36,7 +36,7 @@ def jvp_single_grad(input_ids, attention_mask, labels, loss_mask, model: Transfo
     return total_ct_cos, grad_norm
 
 
-def jvp_batch(model: TransformerWrapper, batch, lam_param, params, buffers, chunk_size=None, w=None, theta1=None, m=None, grad_checkpoint=None):
+def jvp_batch(model: TransformerWrapper, batch, lam_param, params, buffers, chunk_size=None, grad_checkpoint=None):
     return vmap(jvp_single_grad, in_dims=(0, 0, 0, 0, None, None, None, None, None), chunk_size=chunk_size)(
         batch["input_ids"], batch["attention_mask"], batch["label"], batch["loss_mask"], model, lam_param, params, buffers, grad_checkpoint)
 

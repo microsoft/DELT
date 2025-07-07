@@ -81,7 +81,7 @@ python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PA
 # e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_original_data.jsonl --split-name train --sample-size 100000
 # You could also replace it with your own dataset under jsonl format. 
 
-# python utils.py --content dataset --data-name plain_text --id togethercomputer/RedPajama-Data-1T-Sample --save-dir data/cc/original_data.jsonl --split-name train --sample-size 100000
+# python utils.py --content dataset --data-name plain_text --id togethercomputer/RedPajama-Data-1T-Sample --save-dir data/cc/original_data.jsonl --split-name train --sample-size 300000
 ```
 </details>
 
@@ -107,11 +107,7 @@ For more details about LQS, please refer to [this guide](./data_scoring/lqs/READ
 ```bash
 bash data_scoring/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash data_scoring/entry.sh data/original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
-
-#####
-# e.g. bash data_scoring/entry.sh data/cc_original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
-# e.g. bash data_scoring/lqs/entry_test.sh data/cc/ data_scoring/config/lqs.yaml
+# e.g. bash data_scoring/entry.sh data/cc/original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
 ```
 </details>
 

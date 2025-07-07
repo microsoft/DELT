@@ -20,39 +20,61 @@ full_data:
   seed: 10
 
 target_data:
-  data-path: GAIR/lima
-  field: conversation
-  model-type: mistral
+  hf_data_id: GAIR/lima
+  hf_data_name: plain_text
+  split_name: train
+  sample_size: -1
+  output_data_path: data/lima/original_data.jsonl
+  split_name: train
+
+  type: data_processing
+  data_name: lima
+  data_path: data/lima
+  field: conversations
+  save: processed_data/data_scorer/lqs
+  model_path: models/mistral/160M
+  data_process_workers: 32
+  max_length: 1025
+  model_type: mistral
+  seed: 10
 
 proxy_data:
-  data-path: processed_data/pretrain/cc/mistral-1025
+  data_path: processed_data/data_scorer/lqs/cc/mistral-1025
+  proxy_num: 163840
+  type: data_processing
+  data_name: cc-mistral-1025
+  save: processed_data/proxy
   proxy-num: 163840
-  save-path: processed_data/proxy
+  max_state: 10
+  min_state: 0
+  seed: 10
 
 annotation_data:
-  model-path: Data-Selection/BSL-160M
-  model-save-path: mistral/160M
+  type: annotation_data
 
-  base_path: "/home/data_efficacy"
-
-  type: "data_annotation"
-  model_type: "mistral"
-  model_path: "/home/data_efficacy/results/pretrain/160M/"
-  ckpt_name: "160M"
-  attn_impl: "eager"
+  # model
+  model_type: mistral
+  model_path: models/mistral/160M
+  ckpt_name: 160M-10k
+  attn_impl: eager
   fp32: true
-
+  
+  # data 
   max_state: 10
   proxy_num: 163840
-  data_name: "cc-lima"
-  data_dir: "/home/data_efficacy/processed_data/pretrain/cc/mistral-1025"
-  dev_data_dir: "/home/data_efficacy/processed_data/lima/mistral-1025/dev"
-  proxy_data_dir: "/home/data_efficacy/processed_data/proxy/cc-mistral-1025/163840"
+  data_name: cc-lima
+  data_dir: processed_data/data_scorer/lqs/cc/mistral-1025
+  dev_data_dir: processed_data/data_scorer/lqs/lima/mistral-1025/dev
+  proxy_data_dir: processed_data/proxy/cc-mistral-1025/163840
   bin_data: true
   no_shuffle: true
-  dataset_type: "lm"
-
+  dataset_type: lm
+  train_num: null
+  dev_num: null
+  
+  # hp
   total_iters: 100
+  epochs: null
   lr: 0.008
   batch_size: 8
   grad_batch_size: 2
@@ -63,36 +85,33 @@ annotation_data:
   max_length: 1024
   num_workers: 2
   weight_decay: 0.0
-  optimizer_name: "sgd"
-  scheduler_name: "constant"
+  optimizer_name: sgd
+  scheduler_name: constant
   warmup_iters: 0
+  min_offset: 0
+  min_prompt_length: 128
+  max_prompt_length: 512
+  from_scratch: false
+  gradient_checkpointing: false
 
-  save_path: "/home/data_efficacy/results/proxy_data/"
+  # runtime
+  save: results/annotation_data
   log_interval: 1
   eval_interval: 10
-  wandb_group: "data_annotation"
+  wandb_group: annotation_data
   compute_ct_interval: 10
 
+  model_parallel: false
+  dropout_path_rate: null
+  xops_attn: false
+  
+  # seed
   seed: 10
-  seed_data: 20
-
-  mode: "disabled"
-
-  type: data_processing
-  data-dir: $BASE_PATH/processed_data/proxy/cc-mistral-1025/163840
-  model-type: mistral
-  model-path: $BASE_PATH/checkpoints/mistral/160M
-  proxy-score-path: $BASE_PATH/results/proxy_data/cc-lima/160M/sgd-t100-bs8-lr0.008constant1e-07-G2-N16-NN2ct10
-  data-scorer-tokenizer-path: $BASE_PATH/checkpoints/fairseq/125M
-  data-scorer-model-type: fairseq
-  data-name: cc-sgd100-160M-lima-lqs
-  save: $BASE_PATH/processed_data/data_scorer_train/
-  max-length: 1024
-  log-interval: 10000
-  data-process-workers: 32
-  chunk-num-per-shard: 1000000
-  dev-num: 16384
-  proxy-num: 163840
+  seed_data: 10
+  
+  # wandb
+  wandb_mode: disabled
+  wandb_name: null
 
 scorer_data_training:
   base-path: "/home/data_efficacy"

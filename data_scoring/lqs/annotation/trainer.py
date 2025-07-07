@@ -10,8 +10,8 @@ from torch.utils.data import DataLoader, DistributedSampler
 from torch.func import grad_and_value
 
 from utils import all_gather, print_rank, get_model
-from train_eval_utils import BaseTrainer
-from data_utils import PromptDataset, LMDataset
+from model_train.train_eval_utils import BaseTrainer
+from model_train.data_utils import LMDataset
 
 from .model_wrapper import TransformerWrapper
 from .checkpointing import Checkpointing
@@ -19,7 +19,8 @@ from .grad_utils import jvp_batch, hvp_fwdrev
 
 
 class GammaTrainer(BaseTrainer):
-    def __init__(self, args, device):
+    def __init__(self, args):
+        device = torch.cuda.current_device()
         super().__init__(args, None, device, do_train=True)
         self.dtype = torch.float32 if args.fp32 else torch.float16
         self.np_dtype = np.float32 if args.fp32 else np.float16
@@ -51,6 +52,9 @@ class GammaTrainer(BaseTrainer):
         self.dev_data_cache = None
         self.dev_grad_first_printed = False
         self.eval_first_printed = False
+
+        # lqs
+        self.grad_checkpoint = torch.ones(len(self.proxy_dataset), device=self.device, dtype=self.dtype)
                 
         self.print_setup()
 
@@ -64,9 +68,7 @@ class GammaTrainer(BaseTrainer):
                                   self.args.train_num, do_probe=do_probe, min_offset=self.args.min_offset, max_state=self.args.max_state)
         # train_dataset = PromptDataset(self.args, self.tokenizer, f"train", self.args.data_dir, self.args.train_num, do_probe=do_probe)
         print_rank("train num", len(train_dataset))
-        if self.args.dataset_type == "prompt":
-            dev_dataset = PromptDataset(self.args, self.tokenizer, "data", self.args.dev_data_dir, self.args.dev_num, do_probe=do_probe)
-        elif self.args.dataset_type == "lm":
+        if self.args.dataset_type == "lm":
             dev_dataset = LMDataset(self.args, self.tokenizer, "data", self.args.dev_data_dir, self.args.dev_num, do_probe=do_probe)
         else:
             raise NotImplementedError(f"Dataset type {self.args.dataset_type} not implemented")
@@ -353,9 +355,6 @@ class GammaTrainer(BaseTrainer):
             lam_param = self.model.vector_to_params(self.lam)
 
             if self.args.compute_ct_interval is None or i % self.args.compute_ct_interval == 0:
-                # if self.args.mould_weight != None or self.args.arc_theta1!= None:
-                #     ct = self.compute_proxy_ct(lam_param, params, buffers, self.args.mould_weight, self.args.arc_theta1, self.args.arc_m)
-                # else:
                 ct = self.compute_proxy_ct(lam_param, params, buffers)
             else:
                 ct = torch.zeros(len(self.proxy_dataset), device=self.device, dtype=self.dtype)
@@ -375,7 +374,7 @@ class GammaTrainer(BaseTrainer):
             # 4. update lam
             tmp = self.args.lr * hvp_vec
             self.lam = self.lam + g_dev_vec - self.args.lr * hvp_vec
-            #self.lam = g_dev_vec + self.lam - tmp
+            # self.lam = g_dev_vec + self.lam - tmp
             
             # 5. step
             self.step_in_backward(ct, i)
@@ -386,7 +385,7 @@ class GammaTrainer(BaseTrainer):
                     i, dev_loss.item(), self.lam.norm().item(), g_dev_vec.norm().item(), tmp.norm().item(), inner_bw_time, dev_grad_time, samp_grad_time, hess_time)
                 self.print_and_save(log_str)
 
-    def compute_proxy_ct(self, lam_param, params, buffers, w=None, theta1=None, m=None):
+    def compute_proxy_ct(self, lam_param, params, buffers):
         '''
         Compute the contribution of the proxy data to the gradient of the loss w.r.t. the model parameters.
         '''
@@ -398,21 +397,28 @@ class GammaTrainer(BaseTrainer):
         
         all_ct = []
 
-        print_rank("-------------------------")
-        print_rank("Add mould weight w: " + str(w))
-        print_rank("Add arc theta1: " + str(theta1))
-        print_rank("Add arc m: " + str(m))
-        print_rank("-------------------------")
+        if not hasattr(self, 'grad_checkpoint'):
+            self.grad_checkpoint = torch.ones(len(self.proxy_dataset), device=self.device, dtype=self.dtype)
 
         for i, (model_batch, no_model_batch) in enumerate(proxy_dataloader):
             if i % 10 == 0:
-                print_rank("Computing contribution on proxy data: {}/{}".format(i, len(proxy_dataloader)))
+                print_rank(f"Computing contribution on proxy data: {i}/{len(proxy_dataloader)}")
             self.proxy_dataset.move_to_device(model_batch, no_model_batch, self.device)
             batch = {**model_batch, **no_model_batch}
-            ct = jvp_batch(self.model, batch, lam_param, params, buffers, w=w, theta1=theta1, m=m)
+
+            start_idx = i * self.px_bs
+            end_idx = min(start_idx + self.px_bs, len(self.proxy_dataset))
+            batch_grad_checkpoint = self.grad_checkpoint[start_idx:end_idx]
+
+            ct, updated_grad_checkpoint = jvp_batch(
+                self.model, batch, lam_param, params, buffers, grad_checkpoint=batch_grad_checkpoint)
+
             ct = all_gather(ct, dim=1, op="stack").view(-1)
             ct = self.args.lr * ct
+
             all_ct.append(ct)
+            self.grad_checkpoint[start_idx:end_idx] = updated_grad_checkpoint
+
         all_ct = torch.cat(all_ct, dim=0)
         all_ct = all_ct[:len(self.proxy_dataset)]
         

@@ -5,16 +5,36 @@ This instruction shows the detailed implementation of Learnability-Quality Score
 #### Dataset and model preparation
 1. First download dataset [Redpajama CC](https://huggingface.co/datasets/togethercomputer/RedPajama-Data-1T). Then run tokenization.
 ```bash
-bash $BASE_PATH/data_scorer/lqs/scripts/tools/process_cc_lqs.sh $BASE_PATH $DATA_PATH
+bash data_scoring/lqs/scripts/prepare_full_dataset.sh $DATA_PATH $CONFIG_PATH
 
-# Convert tokenized data for data scorer inference (if the data scorer and pre-training use different tokenizer).
-bash $BASE_PATH/data_scorer/lqs/scripts/tools/convert_tokenization.sh $BASE_PATH
+# e.g. bash data_scoring/lqs/scripts/prepare_full_dataset.sh data/cc data_scoring/config/lqs.yaml
 ```
 
 2. Get checkpoints for initialization
 ```bash
-python3 $BASE_PATH/data_scorer/lqs/tools/get_checkpoints_lqs.py # Base model for annotation (Mistral 160M) and base model of the data scorer (fairseq 125M)
+bash data_scoring/lqs/scripts/prepare_target_dataset.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/prepare_target_dataset.sh data_scoring/config/lqs.yaml
 ```
+
+```bash
+bash data_scoring/lqs/scripts/proxy_data_sampling.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/proxy_data_sampling.sh data_scoring/config/lqs.yaml
+```
+
+```bash
+bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/proxy_data_sampling.sh data_scoring/config/lqs.yaml
+```
+
+```bash
+bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/proxy_data_annotation.sh data_scoring/config/lqs.yaml 
+
+# python data_scoring/lqs/prepare_data_scorer_train_data.py \
+    # --lqs-process annotation_data \
+    # --config-path $CONFIG_PATH \
+```
+
 
 #### 0.1 Data scorer initialization
 Pre-train the small model for the initialization of LM for data annotation (also is the 160M conventional baseline) or download the [checkpoint](https://huggingface.co/Data-Selection/BSL-160M) instead.

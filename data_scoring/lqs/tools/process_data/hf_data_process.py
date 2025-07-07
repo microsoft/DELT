@@ -1,5 +1,10 @@
-import multiprocessing
 import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
+import multiprocessing
 import time
 import torch
 import json
@@ -10,7 +15,6 @@ import argparse
 import datasets
 
 from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
-
 from model_train.data_utils import ChunkedDatasetBuilder, best_fitting_dtype
 
 
@@ -22,7 +26,7 @@ class Encoder(object):
         Encoder.tokenizer = get_tokenizer(self.args)
         
     def encode(self, line):
-        conversations = line[str(self.args.target_data_field)]
+        conversations = line[str(self.args.field)]
         conv = ""
         for utt in conversations:
             utt = utt.replace("\n", " ")
@@ -40,8 +44,7 @@ class Encoder(object):
         return line, conv, tokens, len(conv)
 
 
-def main():
-    args = get_args()
+def main(args):
         
     output_dir = os.path.join(args.save, args.data_name, f"{args.model_type}-{args.max_length}")
     os.makedirs(output_dir, exist_ok=True)
@@ -49,10 +52,10 @@ def main():
     tokenizer = get_tokenizer(args)
     dtype = best_fitting_dtype(tokenizer.vocab_size)
     
-    dataset = datasets.load_dataset(os.path.join(args.data_dir))
+    dataset = datasets.load_dataset(os.path.join(args.data_path))
     
     for split in dataset:
-        builder = ChunkedDatasetBuilder(args.base_path, output_dir, dtype, split=split, do_shuffle=True)
+        builder = ChunkedDatasetBuilder(base_path, output_dir, dtype, split=split, do_shuffle=True)
         
         encoder = Encoder(args)
 
@@ -108,12 +111,9 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Process and tokenize the training data.")
-    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
-    parser.add_argument("--data-path", type=str, required=True, help="Input dataset path.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data"], default="full_data", help="The content to be downloaded.")
     parser.add_argument("--config-path", type=str, required=True, help="Config path.")
 
     args = parser.parse_args()
     args = add_args(args, load_yaml(args.config_path), args.lqs_process)
-
-    # args = get_args()
     main(args)
