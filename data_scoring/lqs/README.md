@@ -23,16 +23,12 @@ bash data_scoring/lqs/scripts/proxy_data_sampling.sh $CONFIG_PATH
 
 ```bash
 bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
-# e.g. bash data_scoring/lqs/scripts/proxy_data_sampling.sh data_scoring/config/lqs.yaml
+# e.g. bash data_scoring/lqs/scripts/proxy_data_annotation.sh data_scoring/config/lqs.yaml
 ```
 
 ```bash
 bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
 # e.g. bash data_scoring/lqs/scripts/proxy_data_annotation.sh data_scoring/config/lqs.yaml 
-
-# python data_scoring/lqs/prepare_data_scorer_train_data.py \
-    # --lqs-process annotation_data \
-    # --config-path $CONFIG_PATH \
 ```
 
 

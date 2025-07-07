@@ -5,6 +5,7 @@ import random
 import argparse
 import numpy as np
 from datetime import timedelta
+from numerize.numerize import numerize
 
 import torch
 import torch.distributed as dist
@@ -83,6 +84,25 @@ def add_args(args, method_params, fields=None):
                     setattr(args, key, value)
     return args
 
+
+def base_training_hp_suffix(args):
+    suffix = ""
+    suffix += (f"e{args.epochs}" if args.epochs is not None else f"t{numerize(args.total_iters)}") + \
+        (f"-w{numerize(args.warmup_iters)}" if args.warmup_iters > 0 else "") + \
+        (f"-bs{args.batch_size}-lr{args.lr}{args.scheduler_name}-G{args.gradient_accumulation_steps}") + \
+        (f"-mp{args.model_parallel_size}" if args.model_parallel > 0 else "")
+    return suffix
+
+def base_infer_hp_suffix(args):
+    return ""
+
+
+def base_model_suffix(args):
+    return f"{args.ckpt_name.replace('/', '_')}"
+
+
+def base_data_suffix(args):
+    return f"{args.data_name.replace('/', '_')}"
 
 def init_distributed(args):
     args.rank = int(os.getenv("RANK", "0"))

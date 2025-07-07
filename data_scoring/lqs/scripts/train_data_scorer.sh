@@ -15,12 +15,6 @@ export WANDB_DISABLED=True
 export TF_CPP_MIN_LOG_LEVEL=3
 export PYTHONPATH=${BASE_PATH}
 
-# download model for data scoring
-python data_scoring/lqs/tools/hf_download.py \
-    --lqs-process scorer_data_training \
-    --content model \
-    --config-path $CONFIG_PATH \ 
-
 CMD="deepspeed ${DISTRIBUTED_ARGS} ${BASE_PATH}/data_scorer/lqs/train_scorer.py --base-path ${BASE_PATH} --lqs-process scorer_data_training --config ${CONFIG_FILE} $@"
 
 echo ${CMD}

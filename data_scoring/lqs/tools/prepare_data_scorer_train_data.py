@@ -1,6 +1,8 @@
 import os
-executable_path = os.getcwd()
-os.path.append(executable_path)
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
 
 import h5py
 import torch
@@ -11,26 +13,7 @@ from matplotlib import pyplot as plt
 
 from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
 from model_train.data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder, best_fitting_dtype
-from data_scoring.lqs.argments_lqs import add_data_args, add_runtime_args, add_hp_args, add_model_args
 
-
-def add_additional_args(parser):
-    parser.add_argument("--data-scorer-tokenizer-path", type=str, default=None)
-    parser.add_argument("--data-scorer-model-type", type=str, default=None)
-    parser.add_argument("--proxy-score-path", type=str, default=None)
-    return parser
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser = add_runtime_args(parser)
-    parser = add_hp_args(parser)
-    parser = add_data_args(parser)
-    parser = add_pmp_solver_args(parser)
-    parser = add_model_args(parser)
-    parser = add_additional_args(parser)
-    args = parser.parse_args()
-    return args
 
 
 def normalize(scores):
@@ -42,8 +25,7 @@ def normalize(scores):
 
 def main(args):
 
-    args.base_path = executable_path
-    output_dir = os.path.join(args.save, f"{args.data_name}-{args.proxy_num}")
+    output_dir = os.path.join(args.proxy_save, f"{args.proxy_data_name}-{args.proxy_num}")
     os.makedirs(output_dir, exist_ok=True)
     
     tokenizer = get_tokenizer(args)
@@ -52,7 +34,7 @@ def main(args):
     tokenizer_cls = get_tokenizer(
         args, model_path=args.data_scorer_tokenizer_path, model_type=args.data_scorer_model_type)
 
-    data_bin = DistributedMMapIndexedDataset(args.data_dir, "data", do_probe=True)
+    data_bin = DistributedMMapIndexedDataset(args.proxy_data_dir, "data", do_probe=True)
     data = []
     data_num = args.proxy_num if args.proxy_num is not None else len(data_bin)
     for i in tqdm(range(data_num)):
@@ -62,8 +44,8 @@ def main(args):
     scores = normalize(scores)
     
     all_data = {
-        "valid": (data[:args.dev_num], scores[:args.dev_num]),
-        "train": (data[args.dev_num:], scores[args.dev_num:])
+        "valid": (data[:args.proxy_dev_num], scores[:args.proxy_dev_num]),
+        "train": (data[args.proxy_dev_num:], scores[args.proxy_dev_num:])
     }
 
     max_length_no_trunc = 0
@@ -71,7 +53,7 @@ def main(args):
     mean_length = 0
 
     for split in ["valid", "train"]:
-        builder = ChunkedDatasetBuilder(args.base_path, output_dir, dtype, split=split)
+        builder = ChunkedDatasetBuilder(base_path, output_dir, dtype, split=split)
         x, y = all_data[split]
         new_y = []
         for lid, (xx, yy) in enumerate(zip(tqdm(x), y)):
@@ -125,8 +107,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Prepare training data for data scorer.")
-    parser.add_argument("--base-path", type=str, required=True, help="Base path.")
-    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scoring_data"], default="full_data", help="The content to be downloaded.")
     parser.add_argument("--config-path", type=str, required=True, help="Config path.")
 
     args = parser.parse_args()

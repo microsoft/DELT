@@ -9,10 +9,10 @@ export TF_CPP_MIN_LOG_LEVEL=3
 python data_scoring/lqs/tools/hf_download.py \
     --lqs-process full_data \
     --content model \
-    --config-path $CONFIG_PATH \
+    --config-path $CONFIG_PATH
 
 # process data
 python data_scoring/lqs/tools/process_data/pretrain_data_process.py \
     --lqs-process full_data \
     --data-path $DATA_PATH \
-    --config-path $CONFIG_PATH \
+    --config-path $CONFIG_PATH

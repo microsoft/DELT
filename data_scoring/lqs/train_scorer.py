@@ -8,7 +8,7 @@ import torch
 import deepspeed
 import argparse
 
-from utils import load_yaml, init, init_deepspeed, add_args
+from utils import load_yaml, init, init_deepspeed, add_args, base_data_suffix, base_model_suffix, base_training_hp_suffix
 from data_scoring.lqs.annotation.trainer import GammaTrainer
 from data_scoring.lqs.trainer.trainer import DataScorerTrainer
 
@@ -21,6 +21,29 @@ def main(args):
     init(args)
     ds_config = init_deepspeed(args)
 
+    if args.type in ["annotation_data"]:
+        save_path = os.path.join(
+            args.save,
+            base_data_suffix(args),
+            base_model_suffix(args),
+            f"{args.optimizer_name}-" + base_training_hp_suffix(args) + f"-ct{args.compute_ct_interval}" 
+        )
+        args.save = save_path
+    elif args.type in ["scoring_data"]:
+        args.save = os.path.join(
+            args.save,
+            base_data_suffix(args),
+            base_model_suffix(args),
+        )
+        if args.do_train:
+            args.save = os.path.join(
+                args.save,
+                base_training_hp_suffix(args),
+                f"{args.data_scorer_encoding}" + ("-bias" if args.data_scorer_bias else "") +
+                f"-{args.data_scorer_head_type}" + args.save_additional_suffix
+            )
+
+    os.makedirs(args.save, exist_ok=True)
     
     if args.type == "annotation_data":
         trainer = GammaTrainer(args)

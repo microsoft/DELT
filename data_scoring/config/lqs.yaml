@@ -113,47 +113,58 @@ annotation_data:
   wandb_mode: disabled
   wandb_name: null
 
+  # data prepare
+  hf_model_id: KoboldAI/fairseq-dense-125M
+  output_model_path: models/fairseq/125M
+
+  proxy_score_path: results/annotation_data/cc-lima/160M-10k/sgd-t100-bs8-lr0.008constant-G2-ct10
+  data_scorer_tokenizer_path: models/fairseq/125M
+  data_scorer_model_type: fairseq
+  proxy_data_name: cc-sgd100-160M-10k-lima
+  proxy_save: processed_data/data_scorer_train
+  data_process_workers: 32
+  chunk_num_per_shard: 1000000
+  proxy_dev_num: 16384
+
 scorer_data_training:
-  base-path: "/home/data_efficacy"
 
-  type: "data-scorer"
-  ckpt-name: "fairseq/125M"
-  ckpt-path: "/home/data_efficacy/checkpoints/fairseq/125M/"
-  model-type: "fairseq"
-  data-scorer-encoding: "mean"
-  data-scorer-bias: true
-  data-scorer-head-type: "linear"
-  # gradient-checkpointing: true
+  type: data-scorer
+  ckpt_name: fairseq/125M
+  ckpt_path: models/fairseq/125M/"
+  model_type: fairseq
+  data_scorer_encoding: mean
+  data_scorer_bias: true
+  data_scorer_head_type: linear
 
-  data-dir: "/home/data_efficacy/processed_data/data_scorer_train/cc-sgd100-160M-lima-lqs-163840"
-  data-name: "cc-sgd100-160M-lima-lqs-163840"
-  num-workers: 0
-  train-num: 163840
-  dev-num: 16384
+  data_dir: processed_data/data_scorer_train/cc-sgd100-160M-lima-lqs-163840
+  data_name: cc-sgd100-160M-lima-lqs-163840
+  num_workers: 0
+  train_num: 163840
+  dev_num: 16384
 
   lr: 0.0001
-  batch-size: 16
-  eval-batch-size: 64
-  gradient-accumulation-steps: 2
-  warmup-iters: 10
-  scheduler-name: "cosine"
-  weight-decay: 1e-2
-  clip-grad: 1.0
+  batch_size: 16
+  eval_batch_size: 64
+  gradient_accumulation_steps: 2
+  warmup_iters: 10
+  scheduler_name: "cosine"
+  weight_decay: 1e-2
+  clip_grad: 1.0
   epochs: 5
-  max-length: 1024
+  max_length: 1024
 
-  do-train: true
-  do-valid: true
-  save-interval: -1
-  eval-interval: -1
-  log-interval: 1
-  mid-log-num: -1
-  save-path: "/home/data_efficacy/results/data_scorer"
+  do_train: true
+  do_valid: true
+  save_interval: -1
+  eval_interval: -1
+  log_interval: 1
+  mid_log_num: -1
+  save_path: /home/data_efficacy/results/data_scorer
   seed: 10
 
   deepspeed: true
-  deepspeed-config: "/home/data_efficacy/configs/deepspeed/ds_config.json"
-  
-  wandb-mode: "disabled"
+  deepspeed_config: model_train/config/deepspeed.json
+
+  wandb-mode: disabled
 
 scorer_data_infer:
