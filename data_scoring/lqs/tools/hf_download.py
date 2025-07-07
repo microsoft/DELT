@@ -1,3 +1,9 @@
+import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import argparse
 from utils import load_yaml, add_args, download_model, download_data
 

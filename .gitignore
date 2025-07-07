@@ -2,6 +2,7 @@
 data/
 models/
 results/
+processed_data/
 
 __pycache__/
 

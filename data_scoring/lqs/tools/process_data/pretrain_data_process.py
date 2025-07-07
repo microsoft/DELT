@@ -1,7 +1,8 @@
-"""Processing data"""
 import os
-executable_path = os.getcwd()
-os.path.append(executable_path)
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
 
 import json
 import time
@@ -15,7 +16,6 @@ import multiprocessing
 from utils import BOS_MODELS, get_tokenizer, load_yaml, add_args
 
 from model_train.data_utils import ChunkedDatasetBuilder, best_fitting_dtype
-from data_scoring.lqs.argments_lqs import add_data_args, add_runtime_args, add_hp_args, add_model_args
 
 
 class Encoder(object):
@@ -29,21 +29,11 @@ class Encoder(object):
     def encode(self, id_with_json_line):
         doc_id, json_line = id_with_json_line
         line = json.loads(json_line)
-        doc = line[str(self.args.filed)]
+        doc = line[str(self.args.field)]
         tokens = Encoder.tokenizer.encode(
             doc, add_special_tokens=False) + [Encoder.tokenizer.eos_token_id]
 
         return tokens, doc_id, len(doc)
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-
-    parser = add_hp_args(add_model_args(
-        add_data_args(add_runtime_args(parser))))
-    args = parser.parse_args()
-
-    return args
 
 
 def check_sent_end(model_type, tokenizer, i, new_chunk, chunk_tokens_buffer):
@@ -63,7 +53,7 @@ def print_and_save(s, output_path):
 
 def get_ent_sent_infos(args, tokenizer):
     with open(os.path.join(
-        args.base_path, "tools", "process_data", f"end_sent_token_{args.model_type}.json"), "r") as f:
+        base_path, "data_scoring/lqs/tools/process_data", f"end_sent_token_{args.model_type}.json"), "r") as f:
         end_sent_token = json.load(f)
     ent_sent_mask = np.zeros(tokenizer.vocab_size, dtype=np.uint8)
     for token in end_sent_token:
@@ -99,7 +89,7 @@ def main(args):
     end_sent_mask, rt_token_mask = get_ent_sent_infos(args, tokenizer)
 
     builder = ChunkedDatasetBuilder(
-        args.base_path,
+        base_path,
         output_path,
         dtype,
         chunk_num_per_shard=args.chunk_num_per_shard,
@@ -228,12 +218,11 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Process and tokenize the training data.")
-    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data, target_data, proxy_data, annotation_data, scorer_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data"], default="full_data", help="The content to be downloaded.")
     parser.add_argument("--data-path", type=str, required=True, help="Input dataset path.")
     parser.add_argument("--config-path", type=str, required=True, help="Config path.")
 
     args = parser.parse_args()
     args = add_args(args, load_yaml(args.config_path), args.lqs_process)
 
-    # args = get_args()
     main(args)

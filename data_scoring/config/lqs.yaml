@@ -4,21 +4,20 @@ description: Config of LQS method in data scoring.
 
 full_data:
   hf_model_id: Data-Selection/BSL-160M
-  output_model_path: mistral/160M
-
-  field: text
-  model-type: mistral
+  output_model_path: models/mistral/160M
 
   type: data_processing 
-  data-name: cc 
-  model-path: checkpoints/mistral/160M 
-  data-dir: $DATA_PATH 
+  data_name: cc 
+  model_path: models/mistral/160M 
   save: processed_data/data_scorer/lqs
-  max-length: 1025
-  log-interval: 10000
-  data-process-workers: 32
-  model-type: mistral
-  chunk-num-per-shard: 1000000
+  field: text
+  max_length: 1025
+  log_interval: 10000
+  data_process_workers: 32
+  model_type: mistral
+  chunk_num_per_shard: 1000000
+  max_shard_num: 10000000
+  seed: 10
 
 target_data:
   data-path: GAIR/lima
