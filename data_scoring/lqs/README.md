@@ -32,8 +32,8 @@ bash data_scoring/lqs/scripts/train_data_scorer.sh $CONFIG_PATH
 ```
 
 ```bash
-bash data_scoring/lqs/scripts/infer_data_scorer.sh $CONFIG_PATH
-# e.g. bash data_scoring/lqs/scripts/infer_data_scorer.sh data_scoring/config/lqs.yaml 
+bash data_scoring/lqs/scripts/infer_data_scorer.sh $CONFIG_PATH $OUTPUT_DATA_PATH
+# e.g. bash data_scoring/lqs/scripts/infer_data_scorer.sh data_scoring/config/lqs.yaml data/cc/lqs_scored_data.jsonl
 ```
 
 

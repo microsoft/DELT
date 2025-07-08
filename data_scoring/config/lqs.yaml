@@ -258,5 +258,12 @@ scorer_data_infer:
   model_parallel: false
   dropout_path_rate: null
 
+  # jsonl data saving
+  bin_data_path: processed_data/data_scorer/lqs/cc/mistral-1025
+  pt_score_path: results/data_scorer_infer/cc/cc-160M-lima
+  jsonl_tokenizer_path: models/mistral/160M
+  jsonl_model_type: mistral
+  save_score_name: lqs_score
+
 
 

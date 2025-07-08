@@ -5,8 +5,6 @@ base_path = os.getcwd()
 sys.path.insert(0, base_path)
 
 import torch
-
-import deepspeed
 import argparse
 
 from utils import load_yaml, init, init_deepspeed_infer, add_args, base_data_suffix, base_model_suffix
