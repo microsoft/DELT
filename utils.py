@@ -1,6 +1,7 @@
 import os
 import yaml
 import json
+import time
 import random
 import argparse
 import numpy as np
@@ -194,6 +195,9 @@ def init(args, do_distributed=True):
     # init save folder
     if args.save != None:
         os.makedirs(args.save, exist_ok=True)
+
+    cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    args.time_stamp = cur_time
 
     init_env(args.seed)
 

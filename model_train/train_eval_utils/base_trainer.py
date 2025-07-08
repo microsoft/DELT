@@ -81,7 +81,7 @@ class BaseTrainer():
         elif self.args.optimizer_name.lower() == "adam":
             optimizer = Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, eps=args.adam_eps, betas=(args.adam_beta, args.adam_beta2))
         elif self.args.optimizer_name.lower() == "adamw":
-            optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay, eps=args.adam_eps, betas=(args.adam_beta, args.adam_beta2))
+            optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=float(args.weight_decay), eps=float(args.adam_eps), betas=(args.adam_beta, args.adam_beta2))
         else:
             raise ValueError(f"Optimizer of type {self.args.optimizer_name} is not supported yet.")
         print_rank(f'Optimizer = {optimizer.__class__.__name__}')

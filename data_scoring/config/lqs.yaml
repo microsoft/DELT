@@ -128,21 +128,22 @@ annotation_data:
 
 scorer_data_training:
 
-  type: data-scorer
+  type: scoring_data
   ckpt_name: fairseq/125M
-  ckpt_path: models/fairseq/125M/"
+  model_path: models/fairseq/125M
   model_type: fairseq
   data_scorer_encoding: mean
   data_scorer_bias: true
   data_scorer_head_type: linear
 
-  data_dir: processed_data/data_scorer_train/cc-sgd100-160M-lima-lqs-163840
+  data_dir: processed_data/data_scorer_train/cc-sgd100-160M-10k-lima-163840
   data_name: cc-sgd100-160M-lima-lqs-163840
   num_workers: 0
   train_num: 163840
   dev_num: 16384
 
   lr: 0.0001
+  lr_min: 0.0000001
   batch_size: 16
   eval_batch_size: 64
   gradient_accumulation_steps: 2
@@ -151,20 +152,47 @@ scorer_data_training:
   weight_decay: 1e-2
   clip_grad: 1.0
   epochs: 5
+  total_iters: null
   max_length: 1024
+  min_prompt_length: 128
+  max_prompt_length: 512
+  from_scratch: false
+  gradient_checkpointing: false
+  attn_impl: null
+  fp32: false
+  optimizer_name: AdamW
+  adam_eps: 1e-8
+  adam_beta: 0.9
+  adam_beta2: 0.999
 
   do_train: true
   do_valid: true
+  do_infer: false
   save_interval: -1
   eval_interval: -1
   log_interval: 1
   mid_log_num: -1
-  save_path: /home/data_efficacy/results/data_scorer
+  save: results/data_scorer
   seed: 10
+  order_seed: 10
+  precompute_data_order: false
+  resume_training: false
+  no_shuffle: false
+  start_from_global_step: null
 
   deepspeed: true
   deepspeed_config: model_train/config/deepspeed.json
 
-  wandb-mode: disabled
+  
+  wandb_mode: disabled
+  wandb_name: null
+  wandb_group: null
+  wandb_id: null
+
+  #
+  model_parallel: false
+  dropout_path_rate: null
+  xops_attn: false
+  torch_compile: null
 
 scorer_data_infer:

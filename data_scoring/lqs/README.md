@@ -27,8 +27,8 @@ bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
 ```
 
 ```bash
-bash data_scoring/lqs/scripts/proxy_data_annotation.sh $CONFIG_PATH
-# e.g. bash data_scoring/lqs/scripts/proxy_data_annotation.sh data_scoring/config/lqs.yaml 
+bash data_scoring/lqs/scripts/train_data_scorer.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/train_data_scorer.sh data_scoring/config/lqs.yaml 
 ```
 
 

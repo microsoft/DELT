@@ -25,8 +25,8 @@ from .modeling import DataScorerModel
 
 
 class DataScorerTrainer(BaseTrainer):
-    device = torch.cuda.current_device()
-    def __init__(self, args, ds_config, device, do_train=True):
+    def __init__(self, args, ds_config, do_train=True):
+        device = torch.cuda.current_device()
         super().__init__(args, ds_config, device, do_train)
         self.min_offset = 0
         self.min_idx = 0

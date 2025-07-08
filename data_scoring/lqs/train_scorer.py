@@ -40,7 +40,7 @@ def main(args):
                 args.save,
                 base_training_hp_suffix(args),
                 f"{args.data_scorer_encoding}" + ("-bias" if args.data_scorer_bias else "") +
-                f"-{args.data_scorer_head_type}" + args.save_additional_suffix
+                f"-{args.data_scorer_head_type}"
             )
 
     os.makedirs(args.save, exist_ok=True)
@@ -58,7 +58,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Sample proxy data for annotation.") 
     parser.add_argument("--local_rank", type=int, help="Local rank for deepspeed.", default=0)
-    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scoring_data"], default="full_data", help="The content to be downloaded.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data_training"], default="full_data", help="The content to be downloaded.")
     parser.add_argument("--config-path", type=str, required=True, help="Config path.")
     parser = deepspeed.add_config_arguments(parser)
 
