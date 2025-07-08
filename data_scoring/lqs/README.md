@@ -31,6 +31,11 @@ bash data_scoring/lqs/scripts/train_data_scorer.sh $CONFIG_PATH
 # e.g. bash data_scoring/lqs/scripts/train_data_scorer.sh data_scoring/config/lqs.yaml 
 ```
 
+```bash
+bash data_scoring/lqs/scripts/infer_data_scorer.sh $CONFIG_PATH
+# e.g. bash data_scoring/lqs/scripts/infer_data_scorer.sh data_scoring/config/lqs.yaml 
+```
+
 
 #### 0.1 Data scorer initialization
 Pre-train the small model for the initialization of LM for data annotation (also is the 160M conventional baseline) or download the [checkpoint](https://huggingface.co/Data-Selection/BSL-160M) instead.

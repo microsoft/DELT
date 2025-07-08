@@ -4,5 +4,6 @@ models/
 results/
 processed_data/
 
+.vscode/
 __pycache__/
 

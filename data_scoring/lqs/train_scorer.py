@@ -14,7 +14,6 @@ from data_scoring.lqs.trainer.trainer import DataScorerTrainer
 
 torch.set_num_threads(16)
 
-
 def main(args):
     torch.backends.cudnn.enabled = False
     

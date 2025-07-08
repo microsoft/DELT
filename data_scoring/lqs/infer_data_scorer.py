@@ -1,55 +1,48 @@
-import time
 import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
 
 import torch
-import torch.distributed as dist
 
-import json
-from arguments import get_args
+import deepspeed
+import argparse
 
-from utils import print_args, initialize, save_rank
+from utils import load_yaml, init, init_deepspeed_infer, add_args, base_data_suffix, base_model_suffix
 
-from data_scorer.lqs.train_scorer import DataScorerTrainer
+from data_scoring.lqs.trainer.trainer import DataScorerTrainer
+
 
 torch.set_num_threads(16)
 
 
-def main():
-    torch.backends.cudnn.enabled = False
+def main(args):
+    torch.backends.cudnn.enabled = False 
     
-    args = get_args()
-    initialize(args)        
+    init(args)
+    ds_config = init_deepspeed_infer(args)
     
-    if dist.get_rank() == 0:
-        print_args(args)
-        with open(os.path.join(args.save, "args.json"), "w") as f:
-            json.dump(vars(args), f, indent=4)
-    
-    device = torch.cuda.current_device()
-    cur_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    args.time_stamp = cur_time
-    save_rank("\n\n" + "="*30 + f" EXP at {cur_time} " + "="*30, os.path.join(args.save, "log.txt"))
-    
-    if args.deepspeed_config is not None:
-        with open(args.deepspeed_config, "r") as f:
-            ds_config = json.load(f)
-
-        ds_config["zero_optimization"]["stage"] = 0
-        
-        if not ds_config["fp16"]["enabled"]:
-            args.fp32 = True
-        
-        args.deepspeed_config = None
-    else:
-        ds_config = None
+    args.save = os.path.join(
+        args.save,
+        base_data_suffix(args),
+        base_model_suffix(args),
+    )
     
     if args.type == "data_scorer":
-        trainer = DataScorerTrainer(args, ds_config, device, args.do_train)
+        trainer = DataScorerTrainer(args, ds_config, args.do_train)
     else:
         raise ValueError(f"Invalid type: {args.type}")    
     
     trainer.inference()
 
-    
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Sample proxy data for annotation.") 
+    parser.add_argument("--local_rank", type=int, help="Local rank for deepspeed.", default=0)
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data_training", "scorer_data_infer"], default="scorer_data_infer", help="The content to be downloaded.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+    
+    main(args)

@@ -1,12 +1,16 @@
 import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import time
 import numpy as np
 import argparse
 import multiprocessing as mp
 
-from utils import BOS_MODELS, get_tokenizer
-from data_utils import ChunkedDatasetBuilder, best_fitting_dtype, DistributedMMapIndexedDataset
-from arguments import add_data_args, add_runtime_args, add_hp_args, add_model_args
+from model_train.data_utils import DistributedMMapIndexedDataset, ChunkedDatasetBuilder, best_fitting_dtype
+from utils import load_yaml, add_args, BOS_MODELS, get_tokenizer
 
 
 class Encoder(object): 
@@ -14,8 +18,8 @@ class Encoder(object):
         self.args = args
         self.old_model_type = args.old_model_type
         self.old_model_path = args.old_model_path
-        self.new_model_type = args.model_type
-        self.new_model_path = args.model_path
+        self.new_model_type = args.new_model_type
+        self.new_model_path = args.new_model_path
 
     def initializer(self):
         Encoder.tokenizer_old = get_tokenizer(
@@ -40,7 +44,7 @@ class Encoder(object):
             tokens.extend(_tokens)
             tokens.append(Encoder.tokenizer_new.eos_token_id)
         tokens.pop() # pop the last eos_token_id
-        if self.args.model_type in BOS_MODELS:
+        if self.args.new_model_type in BOS_MODELS:
             tokens = [Encoder.tokenizer_new.bos_token_id] + tokens[:self.args.max_length-1]
 
         return did, d, tokens, len(d)
@@ -52,42 +56,25 @@ def print_and_save(s, output_path):
         f.write(s + "\n")
 
 
-def get_additional_args(parser):
-    parser.add_argument("--old-model-type", type=str, default=None)
-    parser.add_argument("--old-model-path", type=str, default=None)
-    return parser
-
-
-def get_args():
-    parser = argparse.ArgumentParser()
-
-    parser = get_additional_args(add_hp_args(add_model_args(
-        add_data_args(add_runtime_args(parser)))))
-    args = parser.parse_args()
-
-    return args
-
-
-def main():
-    args = get_args()
+def main(args):
         
     sid = args.min_state * args.chunk_num_per_shard
 
-    output_dir = os.path.join(args.save, args.data_name, f"{args.old_model_type}-{args.model_type}-{args.max_length}")
+    output_dir = os.path.join(args.save_convert_data, args.data_name, f"{args.old_model_type}-{args.new_model_type}-{args.max_length}")
     os.makedirs(output_dir, exist_ok=True)
 
     old_tokenizer = get_tokenizer(args, model_path=args.old_model_path, model_type=args.old_model_type)
-    new_tokenizer = get_tokenizer(args, model_path=args.model_path, model_type=args.model_type)
+    new_tokenizer = get_tokenizer(args, model_path=args.new_model_path, model_type=args.new_model_type)
 
     dtype = best_fitting_dtype(new_tokenizer.vocab_size)
     builder = ChunkedDatasetBuilder(
-        args.base_path, output_dir, dtype,
+        base_path, output_dir, dtype,
         chunk_num_per_shard=args.chunk_num_per_shard,
         output_start_state=args.min_state)
 
-    data = DistributedMMapIndexedDataset(args.data_dir, "data", min_state=args.min_state)
+    data = DistributedMMapIndexedDataset(args.data_path, "data", min_state=args.min_state)
     encoder = Encoder(args)
-    pool = mp.Pool(processes=args.data_process_workers,
+    pool = mp.Pool(processes=args.convert_data_process_workers,
                    initializer=encoder.initializer)
     encoded_docs = pool.imap(encoder.encode, enumerate(data), chunksize=50)
 
@@ -140,4 +127,11 @@ def main():
         
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Sample proxy data for annotation.")
+    parser.add_argument("--lqs-process", type=str, required=True, choices=["full_data", "target_data", "proxy_data", "annotation_data", "scorer_data_training", "scorer_data_infer"], default="scorer_data_infer", help="The content to be downloaded.")
+    parser.add_argument("--config-path", type=str, required=True, help="Config path.")
+
+    args = parser.parse_args()
+    args = add_args(args, load_yaml(args.config_path), args.lqs_process)
+    
+    main(args)

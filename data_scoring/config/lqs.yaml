@@ -179,9 +179,10 @@ scorer_data_training:
   resume_training: false
   no_shuffle: false
   start_from_global_step: null
+  save_all: false
 
   deepspeed: true
-  deepspeed_config: model_train/config/deepspeed.json
+  deepspeed_config: model_train/config/ds_config.json
 
   
   wandb_mode: disabled
@@ -196,3 +197,66 @@ scorer_data_training:
   torch_compile: null
 
 scorer_data_infer:
+
+  # convert tokenize 
+  data_name: cc
+  old_model_type: mistral
+  old_model_path: models/mistral/160M
+  new_model_type: fairseq
+  new_model_path: models/fairseq/125M
+  data_path: processed_data/data_scorer/lqs/cc/mistral-1025
+  save_convert_data: processed_data/data_scorer_infer
+  max_length: 1024
+  convert_data_process_workers: 32
+  chunk_num_per_shard: 1000000
+  min_state: 0
+
+  # data infer
+  type: data_scorer
+
+  # model
+  model_path: results/data_scorer/cc-sgd100-160M-lima-lqs-163840/fairseq_125M/e5-w10-bs16-lr0.0001cosine-G2/mean-bias-linear/23040
+  ckpt_name: cc-160M-lima
+  model_type: fairseq
+  attn_impl: eager
+  xops_attn: true
+  torch_compile: reduce-overhead
+  gradient_accumulation_steps: 1
+  # data
+  data_dir: processed_data/data_scorer_infer/cc/mistral-fairseq-1024
+  num_workers: 0
+  infer_num: 160000000
+  # hp
+  eval_batch_size: 128
+  batch_size: 32
+  clip_grad: 1 
+  min_prompt_length: 128
+  max_prompt_length: 512
+  from_scratch: false
+  gradient_checkpointing: false
+  fp32: false
+  # runtime
+  do_train: false
+  do_valid: false
+  do_infer: true
+  log_interval: 10
+  save_interval: 2500
+  save: results/data_scorer_infer/
+  # seed
+  seed: 10
+  order_seed: 10
+  # deepspeed
+  deepspeed: true
+  deepspeed_config: model_train/config/ds_config.json
+  # wandb
+  wandb_mode: disabled
+  wandb_name: null
+  wandb_group: null
+  wandb_id: null
+
+  #
+  model_parallel: false
+  dropout_path_rate: null
+
+
+

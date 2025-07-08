@@ -1,6 +1,11 @@
+import os
+import sys
+
+base_path = os.getcwd()
+sys.path.insert(0, base_path)
+
 import torch
 import torch.nn as nn
-import os
 import json
 
 from utils import get_model, print_rank
@@ -81,7 +86,7 @@ class DataScorerModel(nn.Module):
     def save_pretrained(self, save_dir, **kawrgs):
         with open(os.path.join(save_dir, "config.json"), "w") as f:
             json.dump({
-                "base_model_path": self.base_model_path.replace(self.args.base_path, ""),
+                "base_model_path": self.base_model_path.replace(base_path, ""),
                 "bias": self.bias,
                 "encoding": self.encoding
             }, f, indent=4)

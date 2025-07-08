@@ -159,6 +159,22 @@ def init_deepspeed(args):
     
     return ds_config
 
+def init_deepspeed_infer(args):
+    if args.deepspeed_config is not None:
+        with open(args.deepspeed_config, "r") as f:
+            ds_config = json.load(f)
+
+        ds_config["zero_optimization"]["stage"] = 0
+        
+        if not ds_config["fp16"]["enabled"]:
+            args.fp32 = True
+        
+        args.deepspeed_config = None
+    else:
+        ds_config = None
+    
+    return ds_config
+
 def init_env(seed):
     torch.set_num_threads(16)
     torch.backends.cudnn.enabled = False
