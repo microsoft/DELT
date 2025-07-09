@@ -4,6 +4,7 @@ models/
 results/
 processed_data/
 
+wandb/
 .vscode/
 __pycache__/
 
