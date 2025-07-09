@@ -119,7 +119,7 @@ Existing selection method: **Top-R** (`top-r`), Top-K (`top-k`), and Threshold (
 ```bash
 bash data_selection/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash data_selection/entry.sh data/scored_data.jsonl data/selected_data.jsonl top-r data_selection/config/top-r.yaml
+# e.g. bash data_selection/entry.sh data/cc/lqs_scored_data.jsonl data/cc/lqs_scored_selected_r0.9_data.jsonl top-r data_selection/config/top-r.yaml
 ```
 </details>
 

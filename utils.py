@@ -80,9 +80,14 @@ def add_args(args, method_params, fields=None):
 
     for field in fields:
         if field in method_params:
-            for key, value in method_params[field].items():
-                if not hasattr(args, key) or getattr(args, key) is None:
-                    setattr(args, key, value)
+            value = method_params[field]
+            if isinstance(value, dict):
+                for key, sub_value in value.items():
+                    if not hasattr(args, key) or getattr(args, key) is None:
+                        setattr(args, key, sub_value)
+            else:
+                if not hasattr(args, field) or getattr(args, field) is None:
+                    setattr(args, field, value)
     return args
 
 

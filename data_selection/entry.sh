@@ -10,4 +10,4 @@ python data_selection/entry.py \
     --input_data_path $INPUT_DATA_PATH \
     --output_data_path $OUTPUT_DATA_PATH \
     --method $METHOD \
-    --config $CONFIG_PATH \
+    --config_path $CONFIG_PATH

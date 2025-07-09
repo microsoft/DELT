@@ -1,7 +1,6 @@
-def select(in_data, method_params):
-    in_data = load_jsonl(input_file)
-    score_field = method_params["score_field"]
-    r = float(max(0, method_params["r"]))
+def select(in_data, args):
+    score_field = args.score_field
+    r = float(max(0, args.r))
     k = int(len(in_data) * r)
 
     try:
