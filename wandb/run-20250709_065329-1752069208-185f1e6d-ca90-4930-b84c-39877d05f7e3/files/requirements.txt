@@ -347,7 +347,7 @@ pytz==2025.2
 azure-synapse-managedprivateendpoints==0.4.0
 azure-mgmt-monitor==7.0.0b1
 azure-data-tables==12.4.0
-torch==2.6.0
+torch==2.7.1
 grpcio==1.71.0
 msrestazure==0.6.4.post1
 fastapi-cli==0.0.7
