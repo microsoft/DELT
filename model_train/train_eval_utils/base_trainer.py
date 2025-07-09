@@ -204,12 +204,13 @@ class BaseTrainer():
     def prepare_inference(self, args=None):
         raise NotImplementedError
      
-    def set_datasets(self, args=None, do_train=True):
+    def set_datasets(self, args=None, do_train=True, do_eval=False):
         args = args or self.args
         if do_train:
             self.train_dataset = PromptDataset(args, self.tokenizer, "train", args.data_path, args.train_num, ada_max_length=True)
             print_rank("train num", len(self.train_dataset))
-            self.eval_dataset = PromptDataset(args, self.tokenizer, "dev", args.data_path, args.dev_num, ada_max_length=True)
+            if do_eval:
+                self.eval_dataset = PromptDataset(args, self.tokenizer, "dev", args.data_path, args.dev_num, ada_max_length=True)
         else:
             data_split = args.data_split or "test"
             self.eval_dataset = PromptDataset(args, self.tokenizer, data_split, args.data_path, args.dev_num, ada_max_length=True)
@@ -449,13 +450,16 @@ class BaseTrainer():
                 # eval
                 if (self.steps > 0) and (self.global_steps > 0) and ((self.steps+1) % self.args.gradient_accumulation_steps == 0) and \
                     (self.global_steps % self.args.eval_interval == 0):
-                    self.evaluate()
                     self.set_train()
+                    if self.args.do_eval:
+                        self.evaluate()
+
 
                 # end
                 if ((self.steps+1) % self.args.gradient_accumulation_steps == 0) and (self.global_steps >= self.total_steps):
                     self.save(self.args.save)
-                    self.evaluate()
+                    if self.args.do_eval:
+                        self.evaluate()
                     return
                 
                 self.steps += 1

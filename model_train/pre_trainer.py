@@ -10,9 +10,10 @@ from data_utils.lm_datasets import LMDataset
 class PreTrainer(BaseTrainer):
     def __init__(self, args, ds_config):
         do_train = args.do_train
+        do_eval = args.do_eval
         device = torch.cuda.current_device()
         super().__init__(args, ds_config, device, do_train)
-        self.set_datasets(do_train=do_train)
+        self.set_datasets(do_train=do_train, do_eval=do_eval)
         if do_train:
             self.prepare_learning()
         self.setup_model_and_optimizer(set_optim=do_train)
@@ -21,18 +22,18 @@ class PreTrainer(BaseTrainer):
         elif args.start_from_global_step is not None:
             self.last_global_steps = self.args.start_from_global_step
 
-    def set_datasets(self, args=None, do_train=True):
+    def set_datasets(self, args=None, do_train=True, do_eval=False):
         args = args or self.args
         data_split = args.data_split or "data"
         if do_train:
-            if args.dev_data_dir is None or os.path.samefile(args.dev_data_dir, args.data_path):
-                raise ValueError("dev_data_dir should be different from data_dir")
-            else:
-                min_train_offset = 0
+            min_train_offset = 0
             self.train_dataset = LMDataset(args, self.tokenizer, data_split, args.data_path, args.train_num, data_name="lm", min_offset=min_train_offset+self.args.min_offset, min_state=self.args.min_state)
             self.print_and_save(f"### Training Data Number: {len(self.train_dataset)}")
-            self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.dev_data_dir, args.dev_num, data_name="lm_dev", max_offset=100000)
-            self.print_and_save(f"### Dev Data Number: {len(self.eval_dataset)}")
+            if do_eval:
+                if args.dev_data_path is None or os.path.samefile(args.dev_data_path, args.data_path):
+                    raise ValueError("dev_data_path should be different from data_dir")
+                self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.dev_data_path, args.dev_num, data_name="lm_dev", max_offset=100000)
+                self.print_and_save(f"### Dev Data Number: {len(self.eval_dataset)}")
         else:
             self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.data_path, args.test_num, max_offset=100000)
             self.print_and_save(f"### Test Data Number: {len(self.eval_dataset)}")

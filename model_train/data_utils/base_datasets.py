@@ -66,8 +66,7 @@ class BaseDataset(Dataset):
         if self.args.bin_data:
             self.data = self.load_data_bin(self.data_path, **kwargs)
         elif self.args.json_data:
-            # self.data, self.origin_data = self.load_data_json(self.data_path)
-            self.data = self.load_data_json2(self.data_path)
+            self.data = self.load_data_json(self.data_path)
         else:
             # txt data
             self.data = self.load_data_txt(self.data_path)
@@ -85,39 +84,7 @@ class BaseDataset(Dataset):
                                                     )        
         return data
 
-    def load_data_json(self, data_path):
-        if os.path.exists(os.path.join(data_path, f"{self.split}_{self.args.model_type}.jsonl")):
-            data_path = os.path.join(data_path, f"{self.split}_{self.args.model_type}.jsonl")
-        else:
-            data_path = os.path.join(data_path, f"{self.split}.jsonl")
-        
-        with open(data_path) as f:
-            lines = f.readlines()
-        data_origin = [json.loads(line) for line in lines]
-        data = []
-        print_rank("Loading Data")
-        for d in tqdm(data_origin, disable=(get_rank() != 0)):
-            prompt = d["prompt"].replace("<n>", "\n")
-            prompt_ids = self.tokenizer.encode(prompt)
-            output_ids = None
-            if "output" in d:
-                if isinstance(d["output"], list):
-                    output_ids = self.tokenizer.encode(d["output"][0])
-                else:
-                    output_ids = self.tokenizer.encode(d["output"])
-            data.append({
-                "prompt_ids": prompt_ids,
-                "output_ids": output_ids[:self.max_length - self.max_prompt_length]
-            })
-        print_rank("Load End")
-        return data, data_origin
-
-    def load_data_json2(self, data_path):
-        # if os.path.exists(os.path.join(data_path, f"{self.split}_{self.args.model_type}.jsonl")):
-        #     data_path = os.path.join(data_path, f"{self.split}_{self.args.model_type}.jsonl")
-        # else:
-        #     data_path = os.path.join(data_path, f"{self.split}.jsonl")
-        
+    def load_data_json(self, data_path):        
         with open(data_path) as f:
             lines = f.readlines()
         data_origin = [json.loads(line) for line in lines]

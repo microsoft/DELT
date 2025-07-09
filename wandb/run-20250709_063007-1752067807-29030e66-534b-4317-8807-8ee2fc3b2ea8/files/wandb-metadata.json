@@ -1,0 +1,73 @@
+{
+  "os": "Linux-6.8.0-60-generic-x86_64-with-glibc2.39",
+  "python": "CPython 3.10.16",
+  "startedAt": "2025-07-09T13:30:07.986130Z",
+  "args": [
+    "--local_rank=0",
+    "--data_path",
+    "data/cc/0.01b_original_data.jsonl",
+    "--model_path",
+    "models/mistral/160M",
+    "--save",
+    "models/output_model",
+    "--method",
+    "pretrain",
+    "--config_path",
+    "model_train/config/pre_train.yaml"
+  ],
+  "program": "/home/yanghuan/yangyu/DELT/model_train/entry.py",
+  "codePath": "model_train/entry.py",
+  "git": {
+    "remote": "https://github.com/microsoft/DELT.git",
+    "commit": "becca064eb99161b6bc004bc3982787a8ba5a2e6"
+  },
+  "email": "1720817330@qq.com",
+  "root": "/home/yanghuan/yangyu/DELT",
+  "host": "GCRSANDBOX400",
+  "executable": "/home/yanghuan/anaconda3/envs/data_selection/bin/python3.10",
+  "codePathLocal": "model_train/entry.py",
+  "cpu_count": 64,
+  "cpu_count_logical": 128,
+  "gpu": "NVIDIA RTX A6000",
+  "gpu_count": 4,
+  "disk": {
+    "/": {
+      "total": "1888559685632",
+      "used": "316420001792"
+    }
+  },
+  "memory": {
+    "total": "1068931899392"
+  },
+  "cpu": {
+    "count": 64,
+    "countLogical": 128
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "48305799168",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "48305799168",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "48305799168",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    },
+    {
+      "name": "NVIDIA RTX A6000",
+      "memoryTotal": "48305799168",
+      "cudaCores": 10752,
+      "architecture": "Ampere"
+    }
+  ],
+  "cudaVersion": "12.8"
+}

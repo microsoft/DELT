@@ -78,7 +78,7 @@ bash install.sh
 ```bash
 python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PATH
 
-# e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_0.1b_original_data.jsonl --split-name train --sample-size 100000
+# e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc/0.01b_original_data.jsonl --split-name train --sample-size 1000000
 # You could also replace it with your own dataset under jsonl format. 
 
 ```
@@ -141,7 +141,7 @@ bash data_ordering/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_P
 ```bash
 bash model_train/entry.sh $INPUT_DATA_PATH $INPUT_MODEL_PATH $OUTPUT_MODEL_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash model_train/entry.sh data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl models/mistral/160M models/output_model pretrain model_train/config/pre_train.yaml
+# e.g. bash model_train/entry.sh data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl models/mistral/160M results/pretrain pretrain model_train/config/pre_train.yaml
 ```
 </details>
 

@@ -12,13 +12,16 @@ xops_attn: true
 
 # data
 data_name: cc-lqs-r0.9-folding-l3
-data_path: data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl
-dev_data_dir: "/home/data_efficacy/processed_data/pretrain_eval/cc-mistral-1025/dev-100K"
+dev_data_dir: null
 num_workers: 8
 dev_num: 16384
+bin_data: false
 json_data: true
 no_shuffle: true
 data_split: null
+train_num: null
+min_prompt_length: 128
+max_prompt_length: 512
 
 # train hp
 lr: 0.0006
@@ -30,20 +33,33 @@ warmup_iters: 2000
 scheduler_name: cosine
 weight_decay: 0.01
 clip_grad: 1.0
+optimizer_name: AdamW
 adam_beta: 0.9
 adam_beta2: 0.98
 adam_eps: 1e-6
 epochs: 1
 max_length: 1024
 
-# runtime
+total_iters: null
+min_offset: 0
+min_state: 0
+precompute_data_order: false
+resume_training: false
+start_from_global_step: null
+save_all: false
+
+# runtime 
 do_train: true
 do_valid: true
+do_eval: false
 save_interval: 5000
-eval_interval: 1000
+eval_interval: -1
 log_interval: 10
 mid_log_num: -1
 seed: 10
+order_seed: 10
+gradient_checkpointing: false
+fp32: false
 
 # deepspeed
 deepspeed: true
@@ -53,7 +69,9 @@ deepspeed_config: model_train/config/ds_config.json
 wandb_name: 160M-cc-lqs-r0.9-folding-l3
 wandb_group: pretrain
 wandb_id: null
+wandb_mode: null
 
 # others
 model_parallel: false
 dropout_path_rate: null
+torch_compile: null

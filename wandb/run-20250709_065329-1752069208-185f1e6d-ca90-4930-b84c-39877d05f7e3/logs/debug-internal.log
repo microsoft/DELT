@@ -1,0 +1,7 @@
+{"time":"2025-07-09T06:53:29.034244765-07:00","level":"INFO","msg":"stream: starting","core version":"0.19.11","symlink path":"/home/yanghuan/yangyu/DELT/wandb/run-20250709_065329-1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3/logs/debug-core.log"}
+{"time":"2025-07-09T06:53:29.249645929-07:00","level":"INFO","msg":"created new stream","id":"1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3"}
+{"time":"2025-07-09T06:53:29.24970208-07:00","level":"INFO","msg":"stream: started","id":"1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3"}
+{"time":"2025-07-09T06:53:29.249775672-07:00","level":"INFO","msg":"writer: Do: started","stream_id":"1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3"}
+{"time":"2025-07-09T06:53:29.249807693-07:00","level":"INFO","msg":"sender: started","stream_id":"1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3"}
+{"time":"2025-07-09T06:53:29.249888555-07:00","level":"INFO","msg":"handler: started","stream_id":"1752069208-185f1e6d-ca90-4930-b84c-39877d05f7e3"}
+{"time":"2025-07-09T06:53:29.49934762-07:00","level":"INFO","msg":"Starting system monitor"}

@@ -6,9 +6,9 @@ OUTPUT_MODEL_PATH=${3-'./model/output_model'}
 METHOD=${4-'pretrain'}
 CONFIG_PATH=${5-'pre_train.yaml'}
 
-MASTER_PORT=${6-2030}
-GPUS_PER_NODE=${7-1}
-NNODES=${8-1}
+GPUS_PER_NODE=${6-1}
+NNODES=${7-1}
+MASTER_PORT=${8-2030}
 
 DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
                   --num_nodes $NNODES \
