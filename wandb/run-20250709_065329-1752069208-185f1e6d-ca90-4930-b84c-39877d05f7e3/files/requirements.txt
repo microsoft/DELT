@@ -25,7 +25,7 @@ proto-plus==1.26.1
 sshtunnel==0.1.5
 oauthlib==3.2.2
 semver==2.13.0
-pillow==11.2.1
+pillow==11.3.0
 mistral_common==1.5.5
 portalocker==2.10.1
 tree-sitter-python==0.23.6
