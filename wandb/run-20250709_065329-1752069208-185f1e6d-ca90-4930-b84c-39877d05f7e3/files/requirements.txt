@@ -8,7 +8,7 @@ azure-keyvault-secrets==4.7.0
 google-api-core==2.25.0rc1
 azure-mgmt-applicationinsights==1.0.0
 azure-storage-common==1.4.2
-vllm==0.8.3
+vllm==0.9.0
 sqlitedict==2.1.0
 nvidia-cuda-nvrtc-cu12==12.4.127
 jeepney==0.9.0
