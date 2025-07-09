@@ -81,7 +81,6 @@ python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PA
 # e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_0.1b_original_data.jsonl --split-name train --sample-size 100000
 # You could also replace it with your own dataset under jsonl format. 
 
-# python utils.py --content dataset --data-name plain_text --id togethercomputer/RedPajama-Data-1T-Sample --save-dir data/cc/original_data.jsonl --split-name train --sample-size 300000
 ```
 </details>
 
@@ -142,7 +141,7 @@ bash data_ordering/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_P
 ```bash
 bash model_train/entry.sh $INPUT_DATA_PATH $INPUT_MODEL_PATH $OUTPUT_MODEL_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash model_train/entry.sh data/ordered_data.jsonl model/input_model model/output_model pretrain model_train/config/pre_train.yaml
+# e.g. bash model_train/entry.sh data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl models/mistral/160M models/output_model pretrain model_train/config/pre_train.yaml
 ```
 </details>
 
@@ -153,7 +152,7 @@ bash model_train/entry.sh $INPUT_DATA_PATH $INPUT_MODEL_PATH $OUTPUT_MODEL_PATH 
 ```bash
 bash model_eval/entry.sh $INPUT_MODEL_PATH $OUTPUT_RESULT_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash model_eval/entry.sh model/output_model model/result.yaml lm_evaluation_harness model_eval/config/general.yaml
+# e.g. bash model_eval/entry.sh models/mistral/160M models/mistral/160M/result.yaml lm_evaluation_harness model_eval/config/general.yaml
 ```
 </details>
 

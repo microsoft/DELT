@@ -207,12 +207,12 @@ class BaseTrainer():
     def set_datasets(self, args=None, do_train=True):
         args = args or self.args
         if do_train:
-            self.train_dataset = PromptDataset(args, self.tokenizer, "train", args.data_dir, args.train_num, ada_max_length=True)
+            self.train_dataset = PromptDataset(args, self.tokenizer, "train", args.data_path, args.train_num, ada_max_length=True)
             print_rank("train num", len(self.train_dataset))
-            self.eval_dataset = PromptDataset(args, self.tokenizer, "dev", args.data_dir, args.dev_num, ada_max_length=True)
+            self.eval_dataset = PromptDataset(args, self.tokenizer, "dev", args.data_path, args.dev_num, ada_max_length=True)
         else:
             data_split = args.data_split or "test"
-            self.eval_dataset = PromptDataset(args, self.tokenizer, data_split, args.data_dir, args.dev_num, ada_max_length=True)
+            self.eval_dataset = PromptDataset(args, self.tokenizer, data_split, args.data_path, args.dev_num, ada_max_length=True)
 
     def compute_loss(self, model_batch, no_model_batch):
         raise NotImplementedError

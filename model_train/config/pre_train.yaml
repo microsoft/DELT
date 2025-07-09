@@ -2,42 +2,38 @@ name: pre_train
 version: 1.0
 description: Config of model pre-training.
 
-# base
-base_path: "/home/data_efficacy"
-master_port: 2030
-gpus_per_node: 8
-nnodes: 1
 
 # model
-model_type: "mistral"
-ckpt_name: "mistral/160M"
+model_type: mistral
+ckpt_name: mistral/160M
 from_scratch: true
-attn_impl: "eager"
+attn_impl: eager
 xops_attn: true
 
 # data
-data_name: "cc-sgd100-160M-lima-lqs-t0.0-r0.9"
-data_dir: "/home/data_efficacy/processed_data/pretrain/cc-sgd100-160M-lima-lqs-t0.0-r0.9"
+data_name: cc-lqs-r0.9-folding-l3
+data_path: data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl
 dev_data_dir: "/home/data_efficacy/processed_data/pretrain_eval/cc-mistral-1025/dev-100K"
 num_workers: 8
 dev_num: 16384
-bin_data: true
+json_data: true
 no_shuffle: true
+data_split: null
 
-# train
+# train hp
 lr: 0.0006
 lr_min: 0.00006
 batch_size: 8
 eval_batch_size: 64
 gradient_accumulation_steps: 4
 warmup_iters: 2000
-scheduler_name: "cosine"
+scheduler_name: cosine
 weight_decay: 0.01
 clip_grad: 1.0
 adam_beta: 0.9
 adam_beta2: 0.98
 adam_eps: 1e-6
-total_iters: 100000
+epochs: 1
 max_length: 1024
 
 # runtime
@@ -51,4 +47,13 @@ seed: 10
 
 # deepspeed
 deepspeed: true
-deepspeed_config: "/home/data_efficacy/configs/deepspeed/ds_config.json"
+deepspeed_config: model_train/config/ds_config.json
+
+# wandb
+wandb_name: 160M-cc-lqs-r0.9-folding-l3
+wandb_group: pretrain
+wandb_id: null
+
+# others
+model_parallel: false
+dropout_path_rate: null

@@ -17,17 +17,15 @@ DISTRIBUTED_ARGS="--num_gpus $GPUS_PER_NODE \
 export NCCL_DEBUG=""
 # export WANDB_DISABLED=True
 export TF_CPP_MIN_LOG_LEVEL=3
-export PYTHONPATH=$PWD
 export OMP_NUM_THREADS=16
 
-CMD="deepspeed ${DISTRIBUTED_ARGS} entry.py \
-    --input_data_path ${INPUT_DATA_PATH} \
-    --input_model_path ${INPUT_MODEL_PATH} \
-    --output_model_path ${OUTPUT_MODEL_PATH} \
+CMD="deepspeed ${DISTRIBUTED_ARGS} model_train/entry.py \
+    --data_path ${INPUT_DATA_PATH} \
+    --model_path ${INPUT_MODEL_PATH} \
+    --save ${OUTPUT_MODEL_PATH} \
     --method ${METHOD} \
-    --config ${CONFIG_PATH}"
+    --config_path ${CONFIG_PATH}"
 
 echo ${CMD}
-echo "PYTHONPATH=$PYTHONPATH"
 mkdir -p ${OUTPUT_MODEL_PATH}
 ${CMD}

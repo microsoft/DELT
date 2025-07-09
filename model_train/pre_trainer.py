@@ -2,7 +2,7 @@ import os
 import wandb
 import torch
 from torch.distributed import get_rank
-from ..utils import print_rank, save_rank
+from utils import print_rank, save_rank
 from model_train.train_eval_utils.base_trainer import BaseTrainer
 from data_utils.lm_datasets import LMDataset
 
@@ -25,16 +25,16 @@ class PreTrainer(BaseTrainer):
         args = args or self.args
         data_split = args.data_split or "data"
         if do_train:
-            if args.dev_data_dir is None or os.path.samefile(args.dev_data_dir, args.data_dir):
+            if args.dev_data_dir is None or os.path.samefile(args.dev_data_dir, args.data_path):
                 raise ValueError("dev_data_dir should be different from data_dir")
             else:
                 min_train_offset = 0
-            self.train_dataset = LMDataset(args, self.tokenizer, data_split, args.data_dir, args.train_num, data_name="lm", min_offset=min_train_offset+self.args.min_offset, min_state=self.args.min_state)
+            self.train_dataset = LMDataset(args, self.tokenizer, data_split, args.data_path, args.train_num, data_name="lm", min_offset=min_train_offset+self.args.min_offset, min_state=self.args.min_state)
             self.print_and_save(f"### Training Data Number: {len(self.train_dataset)}")
             self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.dev_data_dir, args.dev_num, data_name="lm_dev", max_offset=100000)
             self.print_and_save(f"### Dev Data Number: {len(self.eval_dataset)}")
         else:
-            self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.data_dir, args.test_num, max_offset=100000)
+            self.eval_dataset = LMDataset(args, self.tokenizer, data_split, args.data_path, args.test_num, max_offset=100000)
             self.print_and_save(f"### Test Data Number: {len(self.eval_dataset)}")
     
     def compute_loss(self, model_batch, no_model_batch):
