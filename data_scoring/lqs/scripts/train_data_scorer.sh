@@ -13,7 +13,7 @@ export NCCL_DEBUG=""
 export WANDB_DISABLED=True
 export TF_CPP_MIN_LOG_LEVEL=3
 
-CMD="deepspeed ${DISTRIBUTED_ARGS} data_scoring/lqs/train_scorer.py --lqs-process scorer_data_training --config ${CONFIG_FILE}"
+CMD="deepspeed ${DISTRIBUTED_ARGS} data_scoring/lqs/train_data_scorer.py --lqs-process scorer_data_training --config ${CONFIG_FILE}"
 
 echo ${CMD}
 ${CMD}

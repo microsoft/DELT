@@ -264,6 +264,3 @@ scorer_data_infer:
   jsonl_tokenizer_path: models/mistral/160M
   jsonl_model_type: mistral
   save_score_name: lqs_score
-
-
-

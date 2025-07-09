@@ -14,7 +14,7 @@ from torch.distributed import get_rank
 import deepspeed
 from accelerate import load_checkpoint_and_dispatch, init_empty_weights
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, AutoModel, AutoTokenizer
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 try:
     from transformers import mpu
@@ -332,10 +332,20 @@ def download_model(model_id, save_dir):
     print(f"Model '{model_id}' has been saved to '{save_dir}'.")
 
 def download_data(dataset_id, name, save_dir, split_name=None, sample_size=-1):
-    dataset = load_dataset(dataset_id, name=name, split=(split_name if split_name != "" else None), trust_remote_code=True)
-    if sample_size > 0 and sample_size < len(dataset):
-        dataset = dataset.select(range(sample_size))
-    dataset.to_json(save_dir)
+    if sample_size <= 0:
+        print("Error: 'sample_size' must be greater than 0.")
+        return
+
+    dataset = load_dataset(dataset_id, name=name, split=(split_name if split_name != "" else None), streaming=True, trust_remote_code=True)
+
+    sampled_data = []
+    for i, example in enumerate(dataset):
+        if i >= sample_size:
+            break
+        sampled_data.append(example)
+    sampled_dataset = Dataset.from_list(sampled_data)
+    
+    sampled_dataset.to_json(save_dir)
     print(f"Dataset '{dataset_id}' has been saved to '{save_dir}'.")
 
 

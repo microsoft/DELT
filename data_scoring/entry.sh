@@ -20,9 +20,10 @@ if [ "$1" == "--help" ]; then
 fi
 
 if [ "$METHOD" == "lqs" ]; then
-  if [ ! -x "./data_scorer/lqs/entry.sh" ]; then
+  chmod +x ./data_scoring/lqs/entry.sh
+  if [ ! -x "./data_scoring/lqs/entry.sh" ]; then
     echo "Error: Script .sh does not exist or is not executable."
     exit 1
   fi
-  bash ./data_scorer/lqs/entry_test.sh $INPUT_MODEL_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
+  bash ./data_scoring/lqs/entry.sh $INPUT_MODEL_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 fi

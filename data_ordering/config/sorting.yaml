@@ -3,3 +3,4 @@ version: 1.0
 description: Config of sorting method in data ordering.
 
 score_field: lqs_score
+ascending: true

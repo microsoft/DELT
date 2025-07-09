@@ -78,7 +78,7 @@ bash install.sh
 ```bash
 python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PATH
 
-# e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_original_data.jsonl --split-name train --sample-size 100000
+# e.g. python utils.py --content dataset --data-name common_crawl --id togethercomputer/RedPajama-Data-1T --save-dir data/cc_0.1b_original_data.jsonl --split-name train --sample-size 100000
 # You could also replace it with your own dataset under jsonl format. 
 
 # python utils.py --content dataset --data-name plain_text --id togethercomputer/RedPajama-Data-1T-Sample --save-dir data/cc/original_data.jsonl --split-name train --sample-size 300000
@@ -107,7 +107,7 @@ For more details about LQS, please refer to [this guide](./data_scoring/lqs/READ
 ```bash
 bash data_scoring/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash data_scoring/entry.sh data/cc/original_data.jsonl data/scored_data.jsonl lqs data_scoring/config/lqs.yaml
+# e.g. bash data_scoring/entry.sh data/cc/original_data.jsonl data/cc/scored_data.jsonl lqs data_scoring/config/lqs.yaml
 ```
 </details>
 
@@ -131,7 +131,7 @@ Existing ordering method: Shuffle (`shuffle`), Sorting (`sorting`), and **Foldin
 ```bash
 bash data_ordering/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
 
-# e.g. bash data_ordering/entry.sh data/selected_data.jsonl data/ordered_data.jsonl folding data_ordering/config/folding.yaml
+# e.g. bash data_ordering/entry.sh data/cc/lqs_scored_selected_r0.9_data.jsonl data/cc/lqs_scored_selected_r0.9_ordered_folding_l3_data.jsonl folding data_ordering/config/folding.yaml
 ```
 </details>
 
