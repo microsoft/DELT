@@ -322,7 +322,7 @@ python-dateutil==2.9.0.post0
 lm_eval==0.4.8
 azure-batch==15.0.0b2
 certifi==2025.4.26
-requests==2.32.3
+requests==2.32.4
 google-auth==2.40.1
 azure-appconfiguration==1.7.1
 azure-mgmt-containerservice==35.0.0
