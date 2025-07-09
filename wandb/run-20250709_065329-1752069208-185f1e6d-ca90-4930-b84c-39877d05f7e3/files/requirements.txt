@@ -190,7 +190,7 @@ azure-mgmt-redis==14.5.0
 MarkupSafe==3.0.2
 azure-mgmt-extendedlocation==1.0.0b2
 fusepy==3.0.1
-transformers==4.46.0.dev0
+transformers==4.52.1
 fastrlock==0.8.3
 frozenlist==1.6.0
 azureml-pipeline==1.60.0
