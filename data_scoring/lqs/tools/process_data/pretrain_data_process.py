@@ -80,6 +80,7 @@ def main(args):
         
     output_path = os.path.join(args.save, args.data_name, f"{args.model_type}-{args.max_length}")
     os.makedirs(output_path, exist_ok=True)
+    args.data_path = os.path.join(base_path, args.data_path)
     print_and_save(f"Tokenizer vocab size: {tokenizer.vocab_size}. Using dtype: {dtype}", output_path)
     print_and_save(f"Input path: {args.data_path} | Output path: {output_path}", output_path)
         
@@ -111,92 +112,77 @@ def main(args):
     pool = multiprocessing.Pool(args.data_process_workers, initializer=encoder.initializer)
     
     global_start = time.time()
-    files_names =[]
-    for _, _, files in os.walk(args.data_path):
-        for file_name in files:
-            files_names.append(file_name)
-            
-    random.shuffle(files_names)
-    
-    with open(os.path.join(output_path, "file_names.json"), "w") as f:
-        json.dump(files_names, f)
     
     proc_start = global_start
-    
-    for fid, file_name in enumerate(files_names):
-        print_and_save(f"Processing {file_name}. {fid}/{len(files_names)}", output_path)
-        input_file = os.path.join(args.data_path, file_name)
-        fin = open(input_file)
+    input_file = args.data_path
+    fin = open(input_file)
 
-        # use the tokenizer to encode the sentences
-        encoded_docs = pool.imap_unordered(encoder.encode, enumerate(fin), 50)
+    # use the tokenizer to encode the sentences
+    encoded_docs = pool.imap_unordered(encoder.encode, enumerate(fin), 50)
 
-        for doc_tokens, doc_id, bytes_processed in encoded_docs:
-            lid += 1
-            log_bytes_processed += bytes_processed
-            log_doc_proccessed += 1
+    for doc_tokens, doc_id, bytes_processed in encoded_docs:
+        lid += 1
+        log_bytes_processed += bytes_processed
+        log_doc_proccessed += 1
 
-            chunk_tokens_buffer.extend(doc_tokens)
-            while len(chunk_tokens_buffer) >= args.max_length:
-                new_chunk = chunk_tokens_buffer[:args.max_length]
-                if args.model_type in BOS_MODELS:
-                    chunk_tokens_buffer = [tokenizer.bos_token_id] + chunk_tokens_buffer[args.max_length:]
-                else:
-                    chunk_tokens_buffer = chunk_tokens_buffer[args.max_length:]
-                for i in range(len(new_chunk)-1, -1, -1):
-                    if (new_chunk[i] in [tokenizer.eos_token_id]) or \
-                        (rt_token_mask[new_chunk[i]]) or \
-                        (end_sent_mask[new_chunk[i]] and check_sent_end(args.model_type, tokenizer, i, new_chunk, chunk_tokens_buffer)):
-                        # check if the end is fake
-                        # 1. Who are you? I am the D.A. and he is //Bat Man. -> Who are you? // I am the D.A. and he is Bat Man.
-                        # 2. Who are you? I am the D.//A. -> Who are you? // I am the D.A.
-                        incomplete_sent = new_chunk[i+1:]
-                        # new_chunk = new_chunk[:i+1] + [tokenizer.pad_token_id] * (args.max_length - (i+1))
-                        new_chunk = new_chunk[:i+1]
-                        if args.model_type in BOS_MODELS:
-                            chunk_tokens_buffer = chunk_tokens_buffer[:1] + incomplete_sent + chunk_tokens_buffer[1:]
-                        else:
-                            chunk_tokens_buffer = incomplete_sent + chunk_tokens_buffer
-                        padded_token_num += args.max_length - (i+1)
+        chunk_tokens_buffer.extend(doc_tokens)
+        while len(chunk_tokens_buffer) >= args.max_length:
+            new_chunk = chunk_tokens_buffer[:args.max_length]
+            if args.model_type in BOS_MODELS:
+                chunk_tokens_buffer = [tokenizer.bos_token_id] + chunk_tokens_buffer[args.max_length:]
+            else:
+                chunk_tokens_buffer = chunk_tokens_buffer[args.max_length:]
+            for i in range(len(new_chunk)-1, -1, -1):
+                if (new_chunk[i] in [tokenizer.eos_token_id]) or \
+                    (rt_token_mask[new_chunk[i]]) or \
+                    (end_sent_mask[new_chunk[i]] and check_sent_end(args.model_type, tokenizer, i, new_chunk, chunk_tokens_buffer)):
+                    # check if the end is fake
+                    # 1. Who are you? I am the D.A. and he is //Bat Man. -> Who are you? // I am the D.A. and he is Bat Man.
+                    # 2. Who are you? I am the D.//A. -> Who are you? // I am the D.A.
+                    incomplete_sent = new_chunk[i+1:]
+                    # new_chunk = new_chunk[:i+1] + [tokenizer.pad_token_id] * (args.max_length - (i+1))
+                    new_chunk = new_chunk[:i+1]
+                    if args.model_type in BOS_MODELS:
+                        chunk_tokens_buffer = chunk_tokens_buffer[:1] + incomplete_sent + chunk_tokens_buffer[1:]
+                    else:
+                        chunk_tokens_buffer = incomplete_sent + chunk_tokens_buffer
+                    padded_token_num += args.max_length - (i+1)
 
-                        break
-                
-                if args.model_type in BOS_MODELS:
-                    assert new_chunk[0] == tokenizer.bos_token_id
-                if len(new_chunk) <= 1:
-                    continue
-                assert len(new_chunk) <= args.max_length
+                    break
+            
+            if args.model_type in BOS_MODELS:
+                assert new_chunk[0] == tokenizer.bos_token_id
+            if len(new_chunk) <= 1:
+                continue
+            assert len(new_chunk) <= args.max_length
 
-                sid += 1
-                max_chunk_length = max(max_chunk_length, len(new_chunk))
-                min_chunk_length = min(min_chunk_length, len(new_chunk))
-                builder.add_np_item(np.array(new_chunk, dtype=dtype))
+            sid += 1
+            max_chunk_length = max(max_chunk_length, len(new_chunk))
+            min_chunk_length = min(min_chunk_length, len(new_chunk))
+            builder.add_np_item(np.array(new_chunk, dtype=dtype))
 
-            if lid % args.log_interval == 0:
-                current = time.time()
-                elapsed = current - proc_start
-                mbs = log_bytes_processed / elapsed / 1024 / 1024
-                ds = log_doc_proccessed / elapsed
-                tokens = (sid * args.max_length - padded_token_num) / 1e9
+        if lid % args.log_interval == 0:
+            current = time.time()
+            elapsed = current - proc_start
+            mbs = log_bytes_processed / elapsed / 1024 / 1024
+            ds = log_doc_proccessed / elapsed
+            tokens = (sid * args.max_length - padded_token_num) / 1e9
 
-                s = f"Processed {lid} documents. {sid} chunks. {tokens:.4f}B tokens. " + \
-                    f"Padding fraction: {padded_token_num / (sid * args.max_length):.4f}. " + \
-                    f"Max chunk length: {max_chunk_length}. Min chunk length: {min_chunk_length}. " + \
-                    f"({ds:.2f} docs/s, {mbs:.4f} MB/s). Total Time: {current - global_start} s."
+            s = f"Processed {lid} documents. {sid} chunks. {tokens:.4f}B tokens. " + \
+                f"Padding fraction: {padded_token_num / (sid * args.max_length):.4f}. " + \
+                f"Max chunk length: {max_chunk_length}. Min chunk length: {min_chunk_length}. " + \
+                f"({ds:.2f} docs/s, {mbs:.4f} MB/s). Total Time: {current - global_start} s."
 
-                print_and_save(s, output_path)
+            print_and_save(s, output_path)
 
-                log_bytes_processed, log_doc_proccessed = 0, 0
-                proc_start = current
+            log_bytes_processed, log_doc_proccessed = 0, 0
+            proc_start = current
 
-            if builder.ofid >= args.max_shard_num:
-                break
-
-        fin.close()
-        fin = None
-        
         if builder.ofid >= args.max_shard_num:
             break
+
+    fin.close()
+    fin = None
 
     builder.finalize()
 

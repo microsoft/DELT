@@ -25,5 +25,5 @@ if [ "$METHOD" == "lqs" ]; then
     echo "Error: Script .sh does not exist or is not executable."
     exit 1
   fi
-  bash ./data_scoring/lqs/entry.sh $INPUT_MODEL_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
+  bash ./data_scoring/lqs/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $CONFIG_PATH
 fi
