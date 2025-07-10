@@ -65,7 +65,7 @@ TBD
 ## ⚙️ Environment Installation
 
 ```bash
-conda create -n data_efficacy python=3.10
+conda create -n data_efficacy python=3.10 -y
 conda activate data_efficacy
 pip install -r requirements.txt
 ```
@@ -90,7 +90,7 @@ python utils.py --content dataset --id $HF_DATASET_ID --save_dir $OUTPUT_DATA_PA
 ```bash
 python utils.py --content=model --id $HF_MODEL_ID --save_dir $OUTPUT_MODEL_PATH
 
-# e.g. python utils.py --content=model --id=Data-Selection/BSL-160M --save_dir=model/input_model
+# e.g. python utils.py --content=model --id=Data-Selection/BSL-160M --save-dir=model/input_model
 # You could also replace it with your own model under hf format.
 ```
 </details>
