@@ -3,9 +3,11 @@ version: 1.0
 description: Config of LQS method in data scoring.
 
 full_data:
+# 
   hf_model_id: Data-Selection/BSL-160M
   output_model_path: models/mistral/160M
 
+# 
   type: data_processing 
   data_name: cc 
   model_path: models/mistral/160M 
@@ -20,6 +22,7 @@ full_data:
   seed: 10
 
 target_data:
+# 
   hf_data_id: GAIR/lima
   hf_data_name: plain_text
   split_name: train
@@ -27,6 +30,7 @@ target_data:
   output_data_path: data/lima/original_data.jsonl
   split_name: train
 
+# 
   type: data_processing
   data_name: lima
   data_path: data/lima
@@ -39,6 +43,7 @@ target_data:
   seed: 10
 
 proxy_data:
+# 
   data_path: processed_data/data_scorer/lqs/cc/mistral-1025
   proxy_num: 163840
   type: data_processing
@@ -50,6 +55,7 @@ proxy_data:
   seed: 10
 
 annotation_data:
+# 
   type: annotation_data
 
   # model
@@ -58,7 +64,6 @@ annotation_data:
   ckpt_name: 160M-10k
   attn_impl: eager
   fp32: true
-  
   # data 
   max_state: 10
   proxy_num: 163840
@@ -71,7 +76,6 @@ annotation_data:
   dataset_type: lm
   train_num: null
   dev_num: null
-  
   # hp
   total_iters: 100
   epochs: null
@@ -93,30 +97,26 @@ annotation_data:
   max_prompt_length: 512
   from_scratch: false
   gradient_checkpointing: false
-
   # runtime
   save: results/annotation_data
   log_interval: 1
   eval_interval: 10
   wandb_group: annotation_data
   compute_ct_interval: 10
-
   model_parallel: false
   dropout_path_rate: null
   xops_attn: false
-  
   # seed
   seed: 10
   seed_data: 10
-  
   # wandb
   wandb_mode: disabled
   wandb_name: null
-
   # data prepare
   hf_model_id: KoboldAI/fairseq-dense-125M
   output_model_path: models/fairseq/125M
 
+# 
   proxy_score_path: results/annotation_data/cc-lima/160M-10k/sgd-t100-bs8-lr0.008constant-G2-ct10
   data_scorer_tokenizer_path: models/fairseq/125M
   data_scorer_model_type: fairseq
@@ -127,7 +127,7 @@ annotation_data:
   proxy_dev_num: 16384
 
 scorer_data_training:
-
+# 
   type: scoring_data
   ckpt_name: fairseq/125M
   model_path: models/fairseq/125M
@@ -181,10 +181,11 @@ scorer_data_training:
   start_from_global_step: null
   save_all: false
 
+  # 
   deepspeed: true
   deepspeed_config: model_train/config/ds_config.json
 
-  
+  # 
   wandb_mode: disabled
   wandb_name: null
   wandb_group: null
