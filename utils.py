@@ -333,16 +333,17 @@ def download_model(model_id, save_dir):
 
 def download_data(dataset_id, name, save_dir, split_name=None, sample_size=-1):
     dataset = load_dataset(dataset_id, name=name, split=(split_name if split_name != "" else None), streaming=True, trust_remote_code=True)
-
+    
     sampled_data = []
     for i, example in enumerate(dataset):
-        if i >= sample_size:
+        if sample_size >= 0 and i >= sample_size:
             break
         sampled_data.append(example)
-    sampled_dataset = Dataset.from_list(sampled_data)
     
+    sampled_dataset = Dataset.from_list(sampled_data)
     sampled_dataset.to_json(save_dir)
-    print(f"Dataset '{dataset_id}' has been saved to '{save_dir}'.")
+    
+    print(f"Dataset '{dataset_id}' has been saved to '{save_dir}' with {len(sampled_data)} samples.")
 
 
 if __name__ == "__main__":
