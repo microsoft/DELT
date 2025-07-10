@@ -14,7 +14,7 @@ export NCCL_DEBUG=""
 export TF_CPP_MIN_LOG_LEVEL=3
 export OMP_NUM_THREADS=16
 
-CMD="deepspeed ${DISTRIBUTED_ARGS} data_scoring/lqs/train_scorer.py --lqs-process annotation_data --config-path ${CONFIG_PATH}"
+CMD="deepspeed ${DISTRIBUTED_ARGS} data_scoring/lqs/train_data_scorer.py --lqs-process annotation_data --config-path ${CONFIG_PATH}"
 
 echo ${CMD}
 ${CMD}

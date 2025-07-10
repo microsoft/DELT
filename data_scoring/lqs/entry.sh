@@ -5,10 +5,10 @@ OUTPUT_DATA_PATH=${2-"./data/scored_data.jsonl"}
 CONFIG_PATH=${3-"./data_scoring/config/lqs.yaml"}
 
 # Step 1: prepare full dataset.
-bash data_scoring/lqs/scripts/prepare_full_dataset.sh $INPUT_DATA_PATH $CONFIG_PATH
+# bash data_scoring/lqs/scripts/prepare_full_dataset.sh $INPUT_DATA_PATH $CONFIG_PATH
 
 # Step 2: prepare target dataset.
-bash data_scoring/lqs/scripts/prepare_target_dataset.sh $CONFIG_PATH
+# bash data_scoring/lqs/scripts/prepare_target_dataset.sh $CONFIG_PATH
 
 # Step 3: prepare (sampled and annotated) training dataset for scoring model.
 # Step 3.1: proxy data sampling.

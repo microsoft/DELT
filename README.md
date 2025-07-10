@@ -58,7 +58,7 @@ Done
 - [x] 2025/06/28: 💥We have released the DELT code for pre-training on general data.
 
 TBD
-- [ ] Release the trained data scorer checkpoint .
+- [ ] Release the trained data scorer checkpoint.
 - [ ] Release the DELT code for post-training on specific domain data.
 
 
@@ -67,7 +67,7 @@ TBD
 ```bash
 conda create -n data_efficacy python=3.10
 conda activate data_efficacy
-bash install.sh
+pip install -r requirements.txt
 ```
 
 ## 💾 Preparation.
@@ -101,7 +101,7 @@ python utils.py --content=model --id $HF_MODEL_ID --save_dir $OUTPUT_MODEL_PATH
 <summary>Data Scoring</summary>
 
 Existing scoring method: KenLM (`kenlm`), PDS (`pds`), and **Learnability-Quality Score** (`lqs`).
-For more details about LQS, please refer to [this guide](./data_scoring/lqs/README_LQS.md).
+For more details about LQS, please refer to [this guide](./data_scoring/lqs/README.md).
 
 ```bash
 bash data_scoring/entry.sh $INPUT_DATA_PATH $OUTPUT_DATA_PATH $METHOD $CONFIG_PATH
