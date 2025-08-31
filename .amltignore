@@ -1,0 +1,7 @@
+__pycache__/
+data/
+models/
+temp/
+wandb/
+.vscode/
+.amltconfig

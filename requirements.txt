@@ -1,0 +1,18 @@
+git+https://github.com/t1101675/transformers.git@data_selection
+git+https://github.com/EleutherAI/lm-evaluation-harness.git
+torch
+deepspeed==0.16.8
+numerize==0.12
+torchtyping==0.1.5
+rich==14.0.0
+accelerate==1.7.0
+datasets==3.6.0
+sentencepiece==0.2.0
+matplotlib==3.10.3
+wandb==0.19.11
+cvxpy==1.6.5
+h5py==3.13.0
+scikit-learn==1.6.1
+Levenshtein==0.27.1
+xformers==0.0.26.post1
+# kenlm==0.3.0

@@ -1,0 +1,20 @@
+name: general
+version: 1.0
+description: Config of general benchmark in model evaluation.
+
+device: cuda:0
+model_format: hf
+batch_size: 64
+seed: 10
+add_bos_token: true
+# auto, float, half
+dtype: auto
+tasks:
+  - hellaswag
+  - sciq
+  - arc_easy
+  - arc_challenge
+  - openbookqa
+  - piqa
+  - winogrande
+  - lambada_openai

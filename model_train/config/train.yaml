@@ -1,0 +1,71 @@
+name: pre_train
+version: 1.0
+description: Config of model training.
+
+# data
+seed: 10
+order_seed: 10
+instruct_field: instruct
+text_field: text
+max_length: 1024
+truncation: true
+# don't change the shuffle_data mode.
+shuffle_data: false
+train_num: null
+data_split: null
+min_offset: 0
+min_state: 0
+min_prompt_length: 128
+max_prompt_length: 512
+bin_data: false
+json_data: true
+
+# model
+model_type: mistral
+from_scratch: true
+attn_impl: eager
+xops_attn: true
+model_parallel: false
+dropout_path_rate: null
+gradient_checkpointing: false
+#padding_side: left
+#padding_side: right
+
+# training
+do_train: true
+batch_size: 8
+gradient_accumulation_steps: 4
+save_strategy: "steps"
+save_steps: 10000
+
+# optimizer
+optimizer_name: adamw_torch
+weight_decay: 0.01
+lr: 0.0006
+adam_beta: 0.9
+adam_beta2: 0.98
+adam_eps: 0.000001
+
+# lr schedule
+num_epochs: 1
+lr_scheduler_type: cosine_with_min_lr
+warmup_iters: 2000
+lr_min: 0.00006
+# lr_scheduler_type: constant
+# warmup_iters: 0
+# lr_min: 0.0006
+
+# log
+log_name: steps
+log_interval: 10
+# none, azure_ml, comet_ml, mlflow, neptune, tensorboard, wandb, codecarbon, clearml, dagshub, flyte, dvclive
+report_name: []
+#report_name:
+#  - wandb
+#wandb_project_name: "delt"
+log_level: passive
+
+# deepspeed
+deepspeed: true
+deepspeed_config: model_train/config/deepspeed.json
+clip_grad: 1.0

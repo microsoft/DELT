@@ -1,0 +1,15 @@
+name: math
+version: 1.0
+description: Config of math benchmark in model evaluation.
+
+device: cuda:0
+model_format: hf
+batch_size: 8
+seed: 10
+add_bos_token: true
+# auto, float, half
+dtype: auto
+tasks:
+  - gsm8k
+  - mathqa
+  - gpqa_diamond_zeroshot

@@ -1,0 +1,14 @@
+name: code
+version: 1.0
+description: Config of code benchmark in model evaluation.
+
+device: cuda:0
+model_format: hf
+batch_size: 1
+seed: 10
+add_bos_token: true
+# auto, float, half
+dtype: auto
+tasks:
+  - humaneval
+  - mbpp
