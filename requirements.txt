@@ -7,7 +7,7 @@ torchtyping==0.1.5
 rich==14.0.0
 accelerate==1.7.0
 datasets==3.6.0
-sentencepiece==0.2.0
+sentencepiece==0.2.1
 matplotlib==3.10.3
 wandb==0.19.11
 cvxpy==1.6.5
